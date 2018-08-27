@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit|ie-comp|ie-stand" />
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WinTillage</title>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    
+    
+</head>
+
+<body>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="">WinTillage</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <!-- <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">工具
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            
+                            <li>
+                                <a href="/2018/08/27/tools-money-exchange.html">货币兑换计算器</a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+    </nav>
+    
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <div class="container theme-showcase" role="main">
+        <div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">定价器</h3>
+            </div>
+            <div class="panel-body">
+                <div class="money-exchange">
+    <label>
+        进价(¥)：<input class="me-bid" type="number" />
+    </label> +
+    <label>
+        邮费(¥)：<input class="me-express-fee" type="number" />
+    </label> +
+    <label>
+        利润率(%)：<input class="me-profit-per" type="number" value="30" />
+    </label>
+    <p>
+        售价(¥) <span class="me-price"></span> - 平台费5% = 利润(¥)
+        <span class="me-profit"></span>
+    </p><br>
+    <p class="text-muted me-show-price hide">
+        售价 ¥<span class="me-price"></span> = $<span class="me-price2"></span>
+    </p>
+    <p class="text-muted">
+        1美元=6.8240人民币，1人民币=0.1465美元
+    </p>
+    <p class="text-muted">
+        利润不包含卖出的邮费
+    </p>
+</div>
+<script>
+    $(function() {
+        var container = $('.money-exchange');
+        var bidEl = container.find('.me-bid');
+        var expressFeeEl = container.find('.me-express-fee');
+        var profitPerEl = container.find('.me-profit-per');
+        var priceEl = container.find('.me-price');
+        var price2El = container.find('.me-price2');
+        var profitEl = container.find('.me-profit');
+        var showPriceEl = container.find('.me-show-price');
+
+        [bidEl, expressFeeEl, profitPerEl].forEach(function(el) {
+            el.change(function() {
+                var bid = parseFloat(bidEl.val()) || 0;
+                var expressFee = parseFloat(expressFeeEl.val()) || 0;
+                var profitPer = parseFloat(profitPerEl.val()) || 0;
+                var price = bid + expressFee + ((bid + expressFee) * (profitPer * 0.01));
+                var profit = price - bid - expressFee - price * 0.05;
+
+                priceEl.text(price.toFixed(2));
+                price2El.text((price * 0.1465).toFixed(2));
+                profitEl.text(profit.toFixed(2));
+                showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+            });
+        });
+    });
+</script>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">待开发</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">待开发</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">待开发</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">待开发</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h3 class="panel-title">待开发</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function(){
+
+});
+</script>
+    </div> <!-- /container -->
+    
+</body>
+
+</html>
