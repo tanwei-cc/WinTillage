@@ -1,10 +1,15 @@
 @import "consts";
 @import "includes";
-
 a {
     cursor: pointer;
 }
 
 .btn-link {
     color: $btn-link;
+}
+
+.logo {
+    width: 90px;
+    position: relative;
+    top: -8px;
 }
