@@ -1,26 +1,25 @@
 <div class="money-exchange">
     <label>
-        进货价(¥)：<input class="me-bid" type="number" />
+        进货价(¥) <input class="me-bid" type="number" />
     </label> +
     <label>
-        进货邮费(¥)：<input class="me-express-fee" type="number" />
+        进货邮费(¥) <input class="me-express-fee" type="number" />
     </label> +
     <label>
-        利润率(%)：<input class="me-profit-per" type="number" value="30" />
-    </label>
+        利润率(%) <input class="me-profit-per" type="number" value="30" />
+    </label> =
     <p>
-        = 售价(¥) <span class="me-price"></span> - 平台费5% = 利润(¥)
-        <span class="me-profit"></span>
+        售价(¥) <span class="me-price"></span> - 平台费5% = 利润(¥) <span class="me-profit"></span>
     </p><br>
     <p class="text-muted me-show-price hide">
         售价转换 ¥<span class="me-price"></span> = $<span class="me-price2"></span>
     </p>
     <p class="text-muted">
-        利润不包含卖出的邮费
+        提醒: 出货邮费由平台的运费模版计算
     </p>
-    <p class="text-muted">
+    <!-- <p class="text-muted">
         1美元=6.8240人民币，1人民币=0.1465美元
-    </p>
+    </p> -->
 </div>
 <script>
     $(function() {
@@ -32,19 +31,30 @@
         var price2El = container.find('.me-price2');
         var profitEl = container.find('.me-profit');
         var showPriceEl = container.find('.me-show-price');
+        var numberEls = container.find('[type="number"]');
+        var moneyExchange = function() {
+            var bid = parseFloat(bidEl.val()) || 0;
+            var expressFee = parseFloat(expressFeeEl.val()) || 0;
+            var profitPer = parseFloat(profitPerEl.val()) || 0;
+            var price = bid + expressFee + ((bid + expressFee) * (profitPer * 0.01));
+            var profit = price - bid - expressFee - price * 0.05;
 
+            priceEl.text(price.toFixed(2));
+            price2El.text((price * 0.1465).toFixed(2));
+            profitEl.text(profit.toFixed(2));
+            showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+        };
+
+        numberEls.each(function() {
+            this.value = localStorage[this.className] || this.value || '';
+        });
+        moneyExchange();
         [bidEl, expressFeeEl, profitPerEl].forEach(function(el) {
-            el.change(function() {
-                var bid = parseFloat(bidEl.val()) || 0;
-                var expressFee = parseFloat(expressFeeEl.val()) || 0;
-                var profitPer = parseFloat(profitPerEl.val()) || 0;
-                var price = bid + expressFee + ((bid + expressFee) * (profitPer * 0.01));
-                var profit = price - bid - expressFee - price * 0.05;
-
-                priceEl.text(price.toFixed(2));
-                price2El.text((price * 0.1465).toFixed(2));
-                profitEl.text(profit.toFixed(2));
-                showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+            el.on('input', function() {
+                moneyExchange();
+                numberEls.each(function() {
+                    localStorage[this.className] = this.value || '';
+                });
             });
         });
     });
