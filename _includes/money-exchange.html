@@ -1,61 +1,100 @@
 <div class="money-exchange">
     <label>
-        进货价(¥) <input class="me-bid" type="number" />
+        进价(¥) <input class="me-bid" type="number" />
     </label> +
     <label>
-        进货邮费(¥) <input class="me-express-fee" type="number" />
+        邮费(¥) <input class="me-express-fee" type="number" />
     </label> +
     <label>
         利润率(%) <input class="me-profit-per" type="number" value="30" />
     </label> =
     <p>
-        售价(¥) <span class="me-price"></span> - 平台费5% = 利润(¥) <span class="me-profit"></span>
+        售价¥<span class="me-price"></span>
+        <span class="equivalent">
+            | $<span class="me-usd-price"></span>
+        </span> - 成本¥<span class="me-cost"></span> - 平台费5% = <br>纯利润¥<span class="me-profit"></span>
+        <span class="equivalent">
+            | <span class="me-pure-profit-per"></span>%
+        </span>
     </p><br>
-    <p class="text-muted me-show-price hide">
-        售价转换 ¥<span class="me-price"></span> = $<span class="me-price2"></span>
+    <p class="text-muted">
+        售价 $ <input class="me-txt-usd-price" type="number" />
+        <a class="btn btn-primary btn-sm btn-change-price">修改</a>
     </p>
     <p class="text-muted">
         提醒: 出货邮费由平台的运费模版计算
     </p>
-    <!-- <p class="text-muted">
-        1美元=6.8240人民币，1人民币=0.1465美元
-    </p> -->
+    <p class="text-muted">
+        1美元=6.8188人民币，1人民币=0.1467美元
+    </p>
 </div>
 <script>
     $(function() {
+        var usd2cny = 6.8188;
+        var cny2usd = 0.1467;
         var container = $('.money-exchange');
         var bidEl = container.find('.me-bid');
         var expressFeeEl = container.find('.me-express-fee');
         var profitPerEl = container.find('.me-profit-per');
+        var pureProfitPerEl = container.find('.me-pure-profit-per');
         var priceEl = container.find('.me-price');
-        var price2El = container.find('.me-price2');
+        var usdPriceEl = container.find('.me-usd-price');
+        var txtUsdPriceEl = container.find('.me-txt-usd-price');
         var profitEl = container.find('.me-profit');
-        var showPriceEl = container.find('.me-show-price');
+        // var showPriceEl = container.find('.me-show-price');
+        var costEl = container.find('.me-cost');
+        var btnChangePriceEl = container.find('.btn-change-price');
         var numberEls = container.find('[type="number"]');
-        var moneyExchange = function() {
+        var moneyExchange = function(fieldName) {
             var bid = parseFloat(bidEl.val()) || 0;
             var expressFee = parseFloat(expressFeeEl.val()) || 0;
             var profitPer = parseFloat(profitPerEl.val()) || 0;
-            var price = bid + expressFee + ((bid + expressFee) * (profitPer * 0.01));
-            var profit = price - bid - expressFee - price * 0.05;
+            var usdPrice = parseFloat(txtUsdPriceEl.val()) || 0;
+            var cost = bid + expressFee; //成本
+            var price;
+            var profit;
+
+            if (fieldName === '$price' && usdPrice) {
+                price = usdPrice * usd2cny;
+                profit = price - bid - expressFee - price * 0.05;
+                //利润率=(售价-进价-邮费)/(进价+邮费)
+                profitPer = (price - bid - expressFee) / cost;
+                profitPerEl.val(Math.floor(profitPer * 100));
+            } else {
+                price = cost + (cost * (profitPer * 0.01));
+                profit = price - bid - expressFee - price * 0.05;
+            }
 
             priceEl.text(price.toFixed(2));
-            price2El.text((price * 0.1465).toFixed(2));
+            usdPriceEl.text((price * cny2usd).toFixed(2));
             profitEl.text(profit.toFixed(2));
-            showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+            //纯利润率=(利润/售价)*100
+            pureProfitPerEl.text(((profit / price) * 100).toFixed(2));
+            costEl.text(cost);
+            // showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+        };
+        var showCacheData = function() {
+            numberEls.each(function() {
+                this.value = localStorage[this.className] || this.value || '';
+            });
+        };
+        var setCacheData = function() {
+            numberEls.each(function() {
+                localStorage[this.className] = this.value || '';
+            });
         };
 
-        numberEls.each(function() {
-            this.value = localStorage[this.className] || this.value || '';
-        });
+        showCacheData();
         moneyExchange();
         [bidEl, expressFeeEl, profitPerEl].forEach(function(el) {
             el.on('input', function() {
                 moneyExchange();
-                numberEls.each(function() {
-                    localStorage[this.className] = this.value || '';
-                });
+                setCacheData();
             });
+        });
+        btnChangePriceEl.click(function() {
+            moneyExchange('$price');
+            txtUsdPriceEl.val('');
         });
     });
 </script>
