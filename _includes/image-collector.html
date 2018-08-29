@@ -1,0 +1,73 @@
+<div class="image-collector">
+    <div class="clearfix">
+        <div class="pull-left">
+            <a class="btn btn-back btn-default btn-sm hide">
+                <i class="glyphicon glyphicon-arrow-left"></i>
+            </a>
+            <a class="btn btn-preview btn-primary btn-sm">预览</a>
+            <span class="img-count-box hide">
+              总共
+              <span class="img-count red"></span> 张图片
+            </span>
+        </div>
+        <div class="pull-right">
+        </div>
+    </div><br>
+    <textarea placeholder="粘贴html代码"></textarea>
+    <div class="preview"></div>
+</div>
+
+<script>
+    $(function() {
+        var prefix = 'image-collector';
+        var container = $('.' + prefix);
+        var textareaEl = container.find('textarea');
+        var previewEl = container.find('.preview');
+        var imgCountEl = container.find('.img-count');
+        var imgCountBoxEl = container.find('.img-count-box');
+        var btnBack = container.find('.btn-back');
+        var btnPreview = container.find('.btn-preview');
+        var viewer;
+
+        textareaEl.val(localStorage[prefix + '_content'] || '');
+
+        btnPreview.click(function() {
+            var imgEls = $(textareaEl.val()).find('img');
+
+            // imgEls.each(function(index) {
+            //     var el = $(this);
+            //     var aEl = $('<a href="' + el.attr('src') + '" download="' + index.toFixed(2) + '"/>');
+            //     el.appendTo(aEl);
+            //     previewEl.append(aEl);
+            // });
+            previewEl.html(imgEls);
+            btnBack.removeClass('hide');
+            btnPreview.hide();
+            textareaEl.hide();
+            previewEl.show();
+            imgCountEl.text(imgEls.size());
+            imgCountBoxEl.removeClass('hide');
+            if (!viewer) {
+                viewer = new Viewer(previewEl[0]);
+            } else {
+                viewer.update();
+            }
+            localStorage[prefix + '_content'] = textareaEl.val();
+        });
+
+        btnBack.click(function() {
+            btnBack.addClass('hide');
+            btnPreview.show();
+            imgCountBoxEl.addClass('hide');
+            textareaEl.show();
+            previewEl.hide();
+            // viewer && viewer.destroy();
+        });
+
+        // previewEl.on('mouseenter', 'img', function() {
+        //     var el = $(this);
+
+        //     el.addClass('mask');
+        // });
+    });
+</script>
