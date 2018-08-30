@@ -1,7 +1,9 @@
 <div class="editor">
     <div>
         <a class="btn btn-clear btn-default btn-sm">清空</a>
-        <a class="btn btn-only-img btn-primary btn-sm">只要图片</a>&nbsp;&nbsp;
+        <a class="btn btn-img-preview btn-primary btn-sm">图片预览</a>
+        <!-- <a class="btn btn-only-img btn-primary btn-sm">只要图片</a> -->
+        &nbsp;&nbsp;
         <span class="text-muted">复制内容：点击编辑器Command + C</span>
     </div><br>
     <textarea></textarea>
@@ -12,7 +14,8 @@
         var container = $('.' + key);
         var textareaEl = container.find('>textarea');
         var btnClearEl = container.find('.btn-clear');
-        var btnOnlyImgEl = container.find('.btn-only-img');
+        var btnImgPreviewEl = container.find('.btn-img-preview');
+        // var btnOnlyImgEl = container.find('.btn-only-img');
         var config = {
             htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
             htmlDoNotWrapTags: ['script', 'style'],
@@ -29,8 +32,13 @@
             try {
                 if (!viewer) {
                     viewer = new Viewer(container.find('.fr-view')[0]);
+                    container.find('.fr-view').on('hidden', function() {
+                        viewer.destroy();
+                    });
+                    viewer.show();
                 } else {
                     viewer.update();
+                    viewer.show();
                 }
             } catch (ex) {}
         };
@@ -41,8 +49,8 @@
             textareaEl.val('');
             textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
                 setCacheData(editor.html.get());
-            }).on('froalaEditor.image.loaded', function(ev, editor) {
-                initViewew();
+                // }).on('froalaEditor.image.loaded', function(ev, editor) {
+                //     initViewew();
             });
             textareaEl.froalaEditor({
                 htmlRemoveTags: ['script', 'style', 'base'],
@@ -52,31 +60,29 @@
         };
 
         initEditor();
-        setTimeout(function() {
-            initViewew();
-        }, 1000);
 
         btnClearEl.click(function() {
             setCacheData('');
             initEditor();
         });
 
-        btnOnlyImgEl.click(function() {
-            var html = textareaEl.froalaEditor('html.get');
-            var insertHtml = [];
-
-            if (!html) return;
-
-            $(html).find('img').each(function() {
-                insertHtml.push(this.outerHTML);
-            });
-            insertHtml = insertHtml.join('');
-
-            setCacheData(insertHtml);
-            initEditor();
-            setTimeout(function () {
-                initViewew();
-            }, 1000);
+        btnImgPreviewEl.click(function() {
+            initViewew();
         });
+
+        // btnOnlyImgEl.click(function() {
+        //     var html = textareaEl.froalaEditor('html.get');
+        //     var insertHtml = [];
+
+        //     if (!html) return;
+
+        //     $(html).find('img').each(function() {
+        //         insertHtml.push(this.outerHTML);
+        //     });
+        //     insertHtml = insertHtml.join('');
+
+        //     setCacheData(insertHtml);
+        //     initEditor();
+        // });
     });
 </script>
