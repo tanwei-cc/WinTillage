@@ -1,6 +1,6 @@
-// a[href*="https://www.froala.com/wysiwyg-editor"] {
-//     display: none!important;
-// }
+a[href*="https://www.froala.com/wysiwyg-editor"] {
+    visibility: hidden;
+}
 
 .money-exchange {
     input {
