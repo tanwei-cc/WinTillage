@@ -30,9 +30,10 @@
 </div>
 <script>
     $(function() {
+        var key = 'money-exchange';
         var usd2cny = 6.8188;
         var cny2usd = 0.1467;
-        var container = $('.money-exchange');
+        var container = $('.' + key);
         var bidEl = container.find('.me-bid');
         var expressFeeEl = container.find('.me-express-fee');
         var profitPerEl = container.find('.me-profit-per');

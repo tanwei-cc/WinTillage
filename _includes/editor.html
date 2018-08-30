@@ -1,0 +1,35 @@
+<div class="editor">
+    <textarea></textarea>
+</div>
+<script>
+    $(function() {
+        var key = 'editor';
+        var container = $('.' + key);
+        var textareaEl = container.find('>textarea');
+        var getCacheData = function() {
+            return localStorage[key + '_content'] || '';
+        };
+        var setCacheData = function(val) {
+            localStorage[key + '_content'] = val || '';
+        };
+        var cacheData = getCacheData();
+        var viewer;
+
+        textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
+            setCacheData(editor.html.get());
+        }).on('froalaEditor.image.loaded', function(ev, editor) {
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(container.find('.fr-view')[0]);
+                } else {
+                    viewer.update();
+                }
+            } catch (ex) {}
+        });
+        textareaEl.froalaEditor({
+            htmlRemoveTags: ['script', 'style', 'base'],
+            htmlExecuteScripts: false
+        });
+        cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
+    });
+</script>

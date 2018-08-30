@@ -7,11 +7,13 @@
     <meta name="renderer" content="webkit|ie-comp|ie-stand" />
     <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
+    <link rel="shortcut icon" href="favicon.ico">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.ico">
-    
+    <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet"> 
     
 </head>
 
@@ -20,15 +22,14 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
-                    aria-controls="navbar">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="">
-                    <img src="favicon.ico" class="logo"/>
+                    <img src="favicon.ico" class="logo" />
                 </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
@@ -78,10 +79,19 @@
             </div>
         </div>
     </nav>
-    
+
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
+    <!-- Include external JS libs. -->
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> -->
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script> -->
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script> -->
+
+    <!-- Include Editor JS files. -->
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.4/js/froala_editor.pkgd.min.js"></script> -->
+    <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
+
     <div class="container theme-showcase" role="main">
         <style type="text/css" media="screen">
   .container {
@@ -104,7 +114,8 @@
   <p>The requested page could not be found.</p>
 </div>
 
-    </div> <!-- /container -->
+    </div>
+    <!-- /container -->
     
 </body>
 

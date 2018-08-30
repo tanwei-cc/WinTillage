@@ -19,8 +19,8 @@
 
 <script>
     $(function() {
-        var prefix = 'image-collector';
-        var container = $('.' + prefix);
+        var key = 'image-collector';
+        var container = $('.' + key);
         var textareaEl = container.find('textarea');
         var previewEl = container.find('.preview');
         var imgCountEl = container.find('.img-count');
@@ -28,9 +28,14 @@
         var btnBack = container.find('.btn-back');
         var btnPreview = container.find('.btn-preview');
         var viewer;
+        var showCacheData = function() {
+            textareaEl.val(localStorage[key + '_content'] || '');
+        };
+        var setCacheData = function() {
+            localStorage[key + '_content'] = textareaEl.val();
+        };
 
-        textareaEl.val(localStorage[prefix + '_content'] || '');
-
+        showCacheData();
         btnPreview.click(function() {
             var imgEls = $(textareaEl.val()).find('img');
 
@@ -47,12 +52,13 @@
             previewEl.show();
             imgCountEl.text(imgEls.size());
             imgCountBoxEl.removeClass('hide');
-            if (!viewer) {
-                viewer = new Viewer(previewEl[0]);
-            } else {
-                viewer.update();
-            }
-            localStorage[prefix + '_content'] = textareaEl.val();
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(previewEl[0]);
+                } else {
+                    viewer.update();
+                }
+            } catch (ex) {}
         });
 
         btnBack.click(function() {
@@ -69,5 +75,7 @@
 
         //     el.addClass('mask');
         // });
+
+        textareaEl.change(setCacheData);
     });
 </script>
