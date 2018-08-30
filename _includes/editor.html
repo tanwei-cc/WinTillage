@@ -74,7 +74,9 @@
 
             setCacheData(insertHtml);
             initEditor();
-            viewer && viewer.update();
+            setTimeout(function () {
+                initViewew();
+            }, 500);
         });
     });
 </script>
