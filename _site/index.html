@@ -13,7 +13,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet"> 
+    <link href="css/style.css?20180830145242" rel="stylesheet"> 
     
 </head>
 
@@ -83,13 +83,6 @@
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
-    <!-- Include external JS libs. -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script> -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script> -->
-
-    <!-- Include Editor JS files. -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.4/js/froala_editor.pkgd.min.js"></script> -->
     <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
 
     <div class="container theme-showcase" role="main">
@@ -290,11 +283,26 @@
         var textareaEl = container.find('>textarea');
         var btnClearEl = container.find('.btn-clear');
         var btnOnlyImgEl = container.find('.btn-only-img');
+        var config = {
+            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
+            htmlDoNotWrapTags: ['script', 'style'],
+            htmlExecuteScripts: false
+        };
+        var viewer;
         var getCacheData = function() {
             return localStorage[key + '_content'] || '';
         };
         var setCacheData = function(val) {
             localStorage[key + '_content'] = val || '';
+        };
+        var initViewew = function() {
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(container.find('.fr-view')[0]);
+                } else {
+                    viewer.update();
+                }
+            } catch (ex) {}
         };
         var initEditor = function() {
             var cacheData = getCacheData();
@@ -304,13 +312,7 @@
             textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
                 setCacheData(editor.html.get());
             }).on('froalaEditor.image.loaded', function(ev, editor) {
-                try {
-                    if (!viewer) {
-                        viewer = new Viewer(container.find('.fr-view')[0]);
-                    } else {
-                        viewer.update();
-                    }
-                } catch (ex) {}
+                initViewew();
             });
             textareaEl.froalaEditor({
                 htmlRemoveTags: ['script', 'style', 'base'],
@@ -318,15 +320,11 @@
             });
             cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
         };
-        var cacheData = getCacheData();
-        var config = {
-            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
-            htmlDoNotWrapTags: ['script', 'style'],
-            htmlExecuteScripts: false
-        };
-        var viewer;
 
         initEditor();
+        setTimeout(function() {
+            initViewew();
+        }, 1000);
 
         btnClearEl.click(function() {
             setCacheData('');
