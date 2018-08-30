@@ -42,7 +42,8 @@
         };
         var cacheData = getCacheData();
         var config = {
-            htmlRemoveTags: ['script', 'style', 'base'],
+            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
+            htmlDoNotWrapTags: ['script', 'style'],
             htmlExecuteScripts: false
         };
         var viewer;
