@@ -272,10 +272,14 @@
     <div class="col-sm-12">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">编辑器</h3>
+                <h3 class="panel-title">内容编辑器</h3>
             </div>
             <div class="panel-body">
                  <div class="editor">
+    <div>
+        <a class="btn btn-clear btn-default btn-sm">清空</a>
+        <a class="btn btn-only-img btn-primary btn-sm">只要图片</a>
+    </div><br>
     <textarea></textarea>
 </div>
 <script>
@@ -283,31 +287,65 @@
         var key = 'editor';
         var container = $('.' + key);
         var textareaEl = container.find('>textarea');
+        var btnClearEl = container.find('.btn-clear');
+        var btnOnlyImgEl = container.find('.btn-only-img');
         var getCacheData = function() {
             return localStorage[key + '_content'] || '';
         };
         var setCacheData = function(val) {
             localStorage[key + '_content'] = val || '';
         };
-        var cacheData = getCacheData();
-        var viewer;
+        var initEditor = function() {
+            var cacheData = getCacheData();
 
-        textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
-            setCacheData(editor.html.get());
-        }).on('froalaEditor.image.loaded', function(ev, editor) {
-            try {
-                if (!viewer) {
-                    viewer = new Viewer(container.find('.fr-view')[0]);
-                } else {
-                    viewer.update();
-                }
-            } catch (ex) {}
-        });
-        textareaEl.froalaEditor({
+            textareaEl.froalaEditor('destroy');
+            textareaEl.val('');
+            textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
+                setCacheData(editor.html.get());
+            }).on('froalaEditor.image.loaded', function(ev, editor) {
+                try {
+                    if (!viewer) {
+                        viewer = new Viewer(container.find('.fr-view')[0]);
+                    } else {
+                        viewer.update();
+                    }
+                } catch (ex) {}
+            });
+            textareaEl.froalaEditor({
+                htmlRemoveTags: ['script', 'style', 'base'],
+                htmlExecuteScripts: false
+            });
+            cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
+        };
+        var cacheData = getCacheData();
+        var config = {
             htmlRemoveTags: ['script', 'style', 'base'],
             htmlExecuteScripts: false
+        };
+        var viewer;
+
+        initEditor();
+
+        btnClearEl.click(function() {
+            setCacheData('');
+            initEditor();
         });
-        cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
+
+        btnOnlyImgEl.click(function() {
+            var html = textareaEl.froalaEditor('html.get');
+            var insertHtml = [];
+
+            if (!html) return;
+
+            $(html).find('img').each(function() {
+                insertHtml.push(this.outerHTML);
+            });
+            insertHtml = insertHtml.join('');
+
+            setCacheData(insertHtml);
+            initEditor();
+            viewer && viewer.update();
+        });
     });
 </script>
             </div>
