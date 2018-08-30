@@ -13,11 +13,26 @@
         var textareaEl = container.find('>textarea');
         var btnClearEl = container.find('.btn-clear');
         var btnOnlyImgEl = container.find('.btn-only-img');
+        var config = {
+            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
+            htmlDoNotWrapTags: ['script', 'style'],
+            htmlExecuteScripts: false
+        };
+        var viewer;
         var getCacheData = function() {
             return localStorage[key + '_content'] || '';
         };
         var setCacheData = function(val) {
             localStorage[key + '_content'] = val || '';
+        };
+        var initViewew = function() {
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(container.find('.fr-view')[0]);
+                } else {
+                    viewer.update();
+                }
+            } catch (ex) {}
         };
         var initEditor = function() {
             var cacheData = getCacheData();
@@ -27,13 +42,7 @@
             textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
                 setCacheData(editor.html.get());
             }).on('froalaEditor.image.loaded', function(ev, editor) {
-                try {
-                    if (!viewer) {
-                        viewer = new Viewer(container.find('.fr-view')[0]);
-                    } else {
-                        viewer.update();
-                    }
-                } catch (ex) {}
+                initViewew();
             });
             textareaEl.froalaEditor({
                 htmlRemoveTags: ['script', 'style', 'base'],
@@ -41,15 +50,11 @@
             });
             cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
         };
-        var cacheData = getCacheData();
-        var config = {
-            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
-            htmlDoNotWrapTags: ['script', 'style'],
-            htmlExecuteScripts: false
-        };
-        var viewer;
 
         initEditor();
+        setTimeout(function() {
+            initViewew();
+        }, 1000);
 
         btnClearEl.click(function() {
             setCacheData('');
