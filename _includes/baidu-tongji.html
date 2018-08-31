@@ -38,7 +38,7 @@
             var href = el.attr('href');
 
             if (href && text && href !== '#') {
-                trackEvent('links', text, '链接', href);
+                trackEvent('link', 'to', text, href);
             }
         });
     });
