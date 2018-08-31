@@ -13,16 +13,53 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180831113603" rel="stylesheet"> 
+    <link href="css/style.css?20180831121732" rel="stylesheet"> 
     
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
-  var _hmt = _hmt || [];
-  (function () {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?3d2d14d4d61d82442977f4ad8763c75f";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?3d2d14d4d61d82442977f4ad8763c75f";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<script>
+    /**
+     * 事件追踪
+     * @param {string} category - 要监控的目标的类型名称，通常是同一组目标的名字，比如”视频”、”音乐”、”软件”、”游戏”等等。
+     * @param {string} action - 用户跟目标交互的行为，如”播放”、”暂停”、”下载”等等。
+     * @param {string} [opt_label] - 事件的一些额外信息，通常可以是歌曲的名称、软件的名称、链接的名称等等。
+     * @param {string} [opt_value] - 事件的一些数值信息，比如权重、时长、价格等等，在报表中可以看到其平均值等数据。
+     */
+    function trackEvent(category, action, opt_label, opt_value) {
+        if (category && action) {
+            _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+        }
+    }
+
+    $(function() {
+        var bodyEl = $(document.body);
+
+        bodyEl.on("click", "[ba-event]", function() {
+            var it = $(this);
+            var values = (it.attr("ba-event") || "").split(",");
+            if (values.length > 1) {
+                trackEvent.apply(null, values);
+            }
+        });
+
+        bodyEl.on('click', 'a[href]', function(ev) {
+            var el = $(this);
+            var text = el.text();
+            var href = el.attr('href');
+
+            if (href && text && href !== '#') {
+                trackEvent('links', text, '链接', href);
+            }
+        });
+    });
 </script>
 </head>
 
@@ -89,7 +126,6 @@
         </div>
     </nav>
 
-    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
     <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
@@ -123,7 +159,7 @@
     </p><br>
     <p class="text-muted">
         售价 $ <input class="me-txt-usd-price" type="number" />
-        <a class="btn btn-primary btn-sm btn-change-price">修改</a>
+        <a class="btn btn-primary btn-sm btn-change-price" ba-event="money-exchange,change-usd-price">修改</a>
     </p>
     <p class="text-muted">
         提醒: 出货邮费由平台的运费模版计算
@@ -279,8 +315,8 @@
             <div class="panel-body">
                  <div class="editor">
     <div>
-        <a class="btn btn-clear btn-default btn-sm">清空</a>
-        <a class="btn btn-img-preview btn-primary btn-sm">图片预览</a>
+        <a class="btn btn-clear btn-default btn-sm" ba-event="editor,clear">清空</a>
+        <a class="btn btn-img-preview btn-primary btn-sm" ba-event="editor,img-preview">图片预览</a>
         <!-- <a class="btn btn-only-img btn-primary btn-sm">只要图片</a> -->
         &nbsp;&nbsp;
         <span class="text-muted">复制内容：点击编辑器Command + C</span>
@@ -301,6 +337,7 @@
             htmlExecuteScripts: false
         };
         var viewer;
+        var isTrackEvent;
         var getCacheData = function() {
             return localStorage[key + '_content'] || '';
         };
@@ -327,9 +364,14 @@
             textareaEl.froalaEditor('destroy');
             textareaEl.val('');
             textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
-                setCacheData(editor.html.get());
+                var html = editor.html.get();
+                setCacheData(html);
                 // }).on('froalaEditor.image.loaded', function(ev, editor) {
                 //     initViewew();
+                if (!isTrackEvent) {
+                    trackEvent('editor', 'contentChanged', '内容', html);
+                    isTrackEvent++;
+                }
             });
             textareaEl.froalaEditor({
                 htmlRemoveTags: ['script', 'style', 'base'],

@@ -1,7 +1,7 @@
 <div class="editor">
     <div>
-        <a class="btn btn-clear btn-default btn-sm">清空</a>
-        <a class="btn btn-img-preview btn-primary btn-sm">图片预览</a>
+        <a class="btn btn-clear btn-default btn-sm" ba-event="editor,clear">清空</a>
+        <a class="btn btn-img-preview btn-primary btn-sm" ba-event="editor,img-preview">图片预览</a>
         <!-- <a class="btn btn-only-img btn-primary btn-sm">只要图片</a> -->
         &nbsp;&nbsp;
         <span class="text-muted">复制内容：点击编辑器Command + C</span>
@@ -22,6 +22,7 @@
             htmlExecuteScripts: false
         };
         var viewer;
+        var isTrackEvent;
         var getCacheData = function() {
             return localStorage[key + '_content'] || '';
         };
@@ -48,9 +49,14 @@
             textareaEl.froalaEditor('destroy');
             textareaEl.val('');
             textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
-                setCacheData(editor.html.get());
+                var html = editor.html.get();
+                setCacheData(html);
                 // }).on('froalaEditor.image.loaded', function(ev, editor) {
                 //     initViewew();
+                if (!isTrackEvent) {
+                    trackEvent('editor', 'contentChanged', '内容', html);
+                    isTrackEvent++;
+                }
             });
             textareaEl.froalaEditor({
                 htmlRemoveTags: ['script', 'style', 'base'],

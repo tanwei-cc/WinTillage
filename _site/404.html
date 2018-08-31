@@ -13,16 +13,53 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180831113603" rel="stylesheet"> 
+    <link href="css/style.css?20180831121732" rel="stylesheet"> 
     
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
-  var _hmt = _hmt || [];
-  (function () {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?3d2d14d4d61d82442977f4ad8763c75f";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?3d2d14d4d61d82442977f4ad8763c75f";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<script>
+    /**
+     * 事件追踪
+     * @param {string} category - 要监控的目标的类型名称，通常是同一组目标的名字，比如”视频”、”音乐”、”软件”、”游戏”等等。
+     * @param {string} action - 用户跟目标交互的行为，如”播放”、”暂停”、”下载”等等。
+     * @param {string} [opt_label] - 事件的一些额外信息，通常可以是歌曲的名称、软件的名称、链接的名称等等。
+     * @param {string} [opt_value] - 事件的一些数值信息，比如权重、时长、价格等等，在报表中可以看到其平均值等数据。
+     */
+    function trackEvent(category, action, opt_label, opt_value) {
+        if (category && action) {
+            _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+        }
+    }
+
+    $(function() {
+        var bodyEl = $(document.body);
+
+        bodyEl.on("click", "[ba-event]", function() {
+            var it = $(this);
+            var values = (it.attr("ba-event") || "").split(",");
+            if (values.length > 1) {
+                trackEvent.apply(null, values);
+            }
+        });
+
+        bodyEl.on('click', 'a[href]', function(ev) {
+            var el = $(this);
+            var text = el.text();
+            var href = el.attr('href');
+
+            if (href && text && href !== '#') {
+                trackEvent('links', text, '链接', href);
+            }
+        });
+    });
 </script>
 </head>
 
@@ -89,7 +126,6 @@
         </div>
     </nav>
 
-    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
     <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
