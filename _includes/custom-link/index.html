@@ -80,6 +80,16 @@
             urlEl.val('');
         });
 
+        container.find('input[name=url]').change(function() {
+            var url = this.value;
+            var nameEl = container.find('input[name=name]');
+            var name = nameEl.val().trim();
+
+            if (!name && url) {
+                nameEl.val(url.split('/')[2] || '');
+            }
+        });
+
         bodyEl.on('click', '.btn-del', function() {
             var index = $(this).parent().index();
             var data = getCacheData();

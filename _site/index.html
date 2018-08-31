@@ -13,7 +13,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180831224005" rel="stylesheet"> 
+    <link href="css/style.css?20180831230811" rel="stylesheet"> 
     
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
@@ -306,8 +306,8 @@
                 <h4 class="modal-title" id="myModalLabel">增加</h4>
             </div>
             <div class="modal-body">
-                <input type="text" name="name" class="form-control" placeholder="链接名称"><br>
-                <input type="link" name="url" class="form-control" placeholder="链接地址">
+                <input type="link" name="url" class="form-control" placeholder="链接地址"><br>
+                <input type="text" name="name" class="form-control" placeholder="链接名称">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -386,6 +386,16 @@
             render(data);
             nameEl.val('');
             urlEl.val('');
+        });
+
+        container.find('input[name=url]').change(function() {
+            var url = this.value;
+            var nameEl = container.find('input[name=name]');
+            var name = nameEl.val().trim();
+
+            if (!name && url) {
+                nameEl.val(url.split('/')[2] || '');
+            }
         });
 
         bodyEl.on('click', '.btn-del', function() {
