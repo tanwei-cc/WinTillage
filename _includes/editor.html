@@ -1,8 +1,8 @@
 <div class="editor">
     <div>
         <a class="btn btn-clear btn-default btn-sm" ba-event="editor,clear">清空</a>
+        <a class="btn btn-only-img btn-primary btn-sm">只留图片</a>
         <a class="btn btn-img-preview btn-primary btn-sm" ba-event="editor,img-preview">图片预览</a>
-        <!-- <a class="btn btn-only-img btn-primary btn-sm">只要图片</a> -->
         &nbsp;&nbsp;
         <span class="text-muted">复制内容：点击编辑器Command + C</span>
     </div><br>
@@ -15,7 +15,7 @@
         var textareaEl = container.find('>textarea');
         var btnClearEl = container.find('.btn-clear');
         var btnImgPreviewEl = container.find('.btn-img-preview');
-        // var btnOnlyImgEl = container.find('.btn-only-img');
+        var btnOnlyImgEl = container.find('.btn-only-img');
         var config = {
             htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
             htmlDoNotWrapTags: ['script', 'style'],
@@ -80,19 +80,19 @@
             initViewew();
         });
 
-        // btnOnlyImgEl.click(function() {
-        //     var html = textareaEl.froalaEditor('html.get');
-        //     var insertHtml = [];
+        btnOnlyImgEl.click(function() {
+            var html = textareaEl.froalaEditor('html.get');
+            var insertHtml = [];
 
-        //     if (!html) return;
+            if (!html) return;
 
-        //     $(html).find('img').each(function() {
-        //         insertHtml.push(this.outerHTML);
-        //     });
-        //     insertHtml = insertHtml.join('');
+            $(html).find('img').each(function() {
+                insertHtml.push(this.outerHTML);
+            });
+            insertHtml = insertHtml.join('');
 
-        //     setCacheData(insertHtml);
-        //     initEditor();
-        // });
+            setCacheData(insertHtml);
+            initEditor();
+        });
     });
 </script>
