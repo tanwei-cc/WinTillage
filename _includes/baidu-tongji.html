@@ -17,7 +17,7 @@
      */
     function trackEvent(category, action, opt_label, opt_value) {
         if (category && action) {
-            _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+            _hmt.push(['_trackEvent', category, action, opt_label || '', opt_value || '']);
         }
     }
 
