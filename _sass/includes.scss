@@ -34,3 +34,30 @@ a[href*="https://www.froala.com/wysiwyg-editor"] {
         max-height: 500px;
     }
 }
+
+.custom-link {
+    .btn-del {
+        display: none;
+    }
+    >.panel-body {
+        >* {
+            word-break: break-all;
+            &:hover,
+            &:focus {
+                .btn-del {
+                    display: initial;
+                }
+            }
+        }
+    }
+}
+
+.editor-im-download {
+    img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+    input {
+        width: 100px;
+    }
+}

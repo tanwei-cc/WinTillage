@@ -70,7 +70,11 @@
             usdPriceEl.text((price * cny2usd).toFixed(2));
             profitEl.text(profit.toFixed(2));
             //纯利润率=(利润/售价)*100
-            pureProfitPerEl.text(((profit / price) * 100).toFixed(2));
+            if (price) {
+                pureProfitPerEl.text(((profit / price) * 100).toFixed(2));
+            } else {
+                pureProfitPerEl.text('0');
+            }
             costEl.text(cost);
             // showPriceEl[price ? 'removeClass' : 'addClass']('hide');
         };

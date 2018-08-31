@@ -1,0 +1,92 @@
+<div class="custom-link panel panel-warning">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            自定义链接
+            <a class="glyphicon glyphicon-plus pull-right" data-toggle="modal" data-target=".custom-link-edit">
+            </a>
+        </h3>
+    </div>
+    <div class="panel-body"></div>
+    {% include custom-link/add.htm %}
+</div>
+<script>
+    $(function() {
+        var key = 'custom-link';
+        var container = $('.' + key);
+        var bodyEl = container.find('.panel-body');
+        var btnSaveEl = container.find('.btn-save');
+        var itemTpl = [
+            '<li>',
+            '<a href="{url}" target="_blank">{name}</a>',
+            '<a class="btn-del glyphicon glyphicon-trash pull-right"></a>',
+            '</li>'
+        ].join('');
+        var render = function(data) {
+            if (!$.isArray(data)) return;
+
+            bodyEl.html(data.map(function(item) {
+                return itemTpl.replace(/\{url\}/g, item.url).replace(/\{name\}/g, item.name);
+            }));
+        };
+        var getCacheData = function() {
+            var data = localStorage[key + '_links'];
+
+            if (data) {
+                try {
+                    data = JSON.parse(data);
+                    data = data.items;
+                } catch (ex) {}
+            }
+
+            return data || [];
+        };
+        var _setCacheData = function(data) {
+            if ($.isArray(data)) {
+                localStorage[key + '_links'] = JSON.stringify({
+                    items: data
+                });
+            }
+        };
+        var setCacheData = function(name, url) {
+            var data = getCacheData();
+
+            if (name && url) {
+                data.push({
+                    name: name,
+                    url: url
+                });
+                _setCacheData(data);
+            }
+            return data;
+        };
+
+        render(getCacheData());
+
+        btnSaveEl.click(function(ev) {
+            var nameEl = container.find('input[name=name]');
+            var urlEl = container.find('input[name=url]');
+            var name = nameEl.val().trim();
+            var url = urlEl.val().trim();
+            var data;
+
+            if (!name || !url) {
+                ev.stopPropagation();
+                return alert('输入链接名称和地址');
+            }
+
+            data = setCacheData(name, url);
+            render(data);
+            nameEl.val('');
+            urlEl.val('');
+        });
+
+        bodyEl.on('click', '.btn-del', function() {
+            var index = $(this).parent().index();
+            var data = getCacheData();
+
+            data.splice(index, 1);
+            _setCacheData(data);
+            render(data);
+        });
+    });
+</script>

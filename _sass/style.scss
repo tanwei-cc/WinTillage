@@ -2,6 +2,14 @@
 @import "includes";
 a {
     cursor: pointer;
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
+}
+
+li {
+    list-style: none;
 }
 
 .btn-link {
@@ -16,4 +24,8 @@ a {
 
 .red {
     color: red;
+}
+
+.glyphicon {
+    font-size: 12px;
 }

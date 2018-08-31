@@ -13,7 +13,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180831121732" rel="stylesheet"> 
+    <link href="css/style.css?20180831224005" rel="stylesheet"> 
     
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
@@ -35,10 +35,10 @@
      */
     function trackEvent(category, action, opt_label, opt_value) {
         if (category && action) {
-            _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+            _hmt.push(['_trackEvent', category, action, opt_label || '', opt_value || '']);
         }
     }
-
+    
     $(function() {
         var bodyEl = $(document.body);
 
@@ -56,7 +56,7 @@
             var href = el.attr('href');
 
             if (href && text && href !== '#') {
-                trackEvent('links', text, '链接', href);
+                trackEvent('link', 'to', text, href);
             }
         });
     });
@@ -92,7 +92,7 @@
                         </ul>
                     </li>
                 </ul> -->
-                <ul class="nav navbar-nav">
+                <!-- <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             常用链接<span class="caret"></span>
@@ -107,7 +107,7 @@
                             <li><a href="https://www.amazon.com/Headphones-Accessories-Supplies/b/ref=nav_shopall_headphones?ie=UTF8&node=172541" target="_blank">【耳机】亚马逊</a></li>
                         </ul>
                     </li>
-                </ul>
+                </ul> -->
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
