@@ -54,7 +54,11 @@
                 // }).on('froalaEditor.image.loaded', function(ev, editor) {
                 //     initViewew();
                 if (!isTrackEvent) {
-                    trackEvent('editor', 'content-change', '内容', html);
+                    var imgSrcs = [];
+                    $(html).find('img').each(function(idx) {
+                        (idx < 3) && this.src && imgSrcs.push(this.src);
+                    });
+                    trackEvent('editor', 'content-change', '内容', imgSrcs.join(''));
                     isTrackEvent++;
                 }
             });
