@@ -36,15 +36,18 @@ a[href*="https://www.froala.com/wysiwyg-editor"] {
 }
 
 .custom-link {
-    .btn-del {
-        display: none;
-    }
     >.panel-body {
+        .pull-right {
+            display: none;
+        }
         >* {
+            &:first-child .glyphicon-arrow-up {
+                display: none;
+            }
             word-break: break-all;
             &:hover,
             &:focus {
-                .btn-del {
+                .pull-right {
                     display: initial;
                 }
             }

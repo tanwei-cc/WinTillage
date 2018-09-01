@@ -2,12 +2,12 @@
     <div class="panel-heading">
         <h3 class="panel-title">
             自定义链接
-            <a class="glyphicon glyphicon-plus pull-right" data-toggle="modal" data-target=".custom-link-edit">
+            <a data-act="add" class="glyphicon glyphicon-plus pull-right" data-toggle="modal" data-target=".custom-link-addedit">
             </a>
         </h3>
     </div>
     <div class="panel-body"></div>
-    {% include custom-link/add.htm %}
+    {% include custom-link/addedit.htm %}
 </div>
 <script>
     $(function() {
@@ -15,10 +15,17 @@
         var container = $('.' + key);
         var bodyEl = container.find('.panel-body');
         var btnSaveEl = container.find('.btn-save');
+        var addeditEl = container.find('.custom-link-addedit');
+        var addeditNameEl = container.find('input[name=name]');
+        var addeditUrlEl = container.find('input[name=url]');
         var itemTpl = [
             '<li>',
             '<a href="{url}" target="_blank">{name}</a>',
-            '<a class="btn-del glyphicon glyphicon-trash pull-right"></a>',
+            '<div class="pull-right">',
+            '<a data-act="up" class="glyphicon glyphicon-arrow-up"></a>&nbsp;',
+            '<a data-act="edit" class="glyphicon glyphicon-pencil" data-toggle="modal" data-target=".custom-link-addedit"></a>&nbsp;',
+            '<a data-act="del" class="glyphicon glyphicon-trash"></a>',
+            '</div>',
             '</li>'
         ].join('');
         var render = function(data) {
@@ -40,63 +47,84 @@
 
             return data || [];
         };
-        var _setCacheData = function(data) {
+        var setCacheData = function(data) {
             if ($.isArray(data)) {
                 localStorage[key + '_links'] = JSON.stringify({
                     items: data
                 });
             }
         };
-        var setCacheData = function(name, url) {
-            var data = getCacheData();
-
-            if (name && url) {
-                data.push({
-                    name: name,
-                    url: url
-                });
-                _setCacheData(data);
-            }
-            return data;
-        };
 
         render(getCacheData());
 
         btnSaveEl.click(function(ev) {
-            var nameEl = container.find('input[name=name]');
-            var urlEl = container.find('input[name=url]');
-            var name = nameEl.val().trim();
-            var url = urlEl.val().trim();
-            var data;
+            var index = addeditEl.data('index');
+            var name = addeditNameEl.val().trim();
+            var url = addeditUrlEl.val().trim();
+            var data = getCacheData();
+            var item = data[index];
 
             if (!name || !url) {
                 ev.stopPropagation();
                 return alert('输入链接名称和地址');
             }
 
-            data = setCacheData(name, url);
-            render(data);
-            nameEl.val('');
-            urlEl.val('');
-        });
-
-        container.find('input[name=url]').change(function() {
-            var url = this.value;
-            var nameEl = container.find('input[name=name]');
-            var name = nameEl.val().trim();
-
-            if (!name && url) {
-                nameEl.val(url.split('/')[2] || '');
+            if (item) {
+                data[index].name = name;
+                data[index].url = url;
+            } else {
+                data.push({
+                    name: name,
+                    url: url
+                });
             }
+            render(data);
+            setCacheData(data);
+            addeditNameEl.val('');
+            addeditUrlEl.val('');
+            addeditEl.data('index', '');
         });
 
-        bodyEl.on('click', '.btn-del', function() {
-            var index = $(this).parent().index();
-            var data = getCacheData();
+        // addeditUrlEl.change(function() {
+        //     var url = this.value;
+        //     var name = addeditNameEl.val().trim();
 
-            data.splice(index, 1);
-            _setCacheData(data);
-            render(data);
+        //     if (!name && url) {
+        //         addeditNameEl.val(url.split('/')[2] || '');
+        //     }
+        // });
+
+        bodyEl.on('click', '[data-act]', function(ev) {
+            var it = $(this);
+            var act = it.data('act');
+            var index = it.parent().parent().index();
+            var data = getCacheData();
+            var item = data[index];
+            var titleEl = container.find('.modal-title');
+
+            switch (act) {
+                case 'add':
+                    titleEl.text('增加');
+                    addeditEl.data('index', '');
+                    break;
+                case 'edit':
+                    titleEl.text('编辑');
+                    addeditNameEl.val(item.name);
+                    addeditUrlEl.val(item.url);
+                    addeditEl.data('index', index);
+                    break;
+                case 'del':
+                    data.splice(index, 1);
+                    render(data);
+                    setCacheData(data);
+                    addeditEl.data('index', '');
+                    break;
+                case 'up':
+                    data[index - 1] = data.splice(index, 1, data[index - 1])[0];
+                    render(data);
+                    setCacheData(data);
+                    break;
+            }
         });
     });
 </script>
