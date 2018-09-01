@@ -85,14 +85,14 @@
             addeditEl.data('index', '');
         });
 
-        // addeditUrlEl.change(function() {
-        //     var url = this.value;
-        //     var name = addeditNameEl.val().trim();
+        addeditUrlEl.change(function() {
+            var url = this.value;
+            var name = addeditNameEl.val().trim();
 
-        //     if (!name && url) {
-        //         addeditNameEl.val(url.split('/')[2] || '');
-        //     }
-        // });
+            if (!name && url) {
+                addeditNameEl.val(url.split('/')[2] || '');
+            }
+        });
 
         bodyEl.on('click', '[data-act]', function(ev) {
             var it = $(this);
