@@ -37,8 +37,8 @@
             var text = el.text();
             var href = el.attr('href');
 
-            if (href && text && href !== '#') {
-                trackEvent('link', 'to', text, href);
+            if (href && href !== '#') {
+                trackEvent('link', 'to', href, text);
             }
         });
     });
