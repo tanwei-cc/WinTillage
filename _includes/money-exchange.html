@@ -1,82 +1,78 @@
 <div class="money-exchange">
-    <label>
-        进价(¥) <input class="me-bid" type="number" />
-    </label> +
-    <label>
-        邮费(¥) <input class="me-express-fee" type="number" />
-    </label> +
-    <label>
-        利润率(%) <input class="me-profit-per" type="number" value="30" />
-    </label> =
-    <p>
-        售价¥<span class="me-price"></span>
-        <span class="equivalent">
-            | $<span class="me-usd-price"></span>
-        </span> - 成本¥<span class="me-cost"></span> - 平台费5% = <br>纯利润¥<span class="me-profit"></span>
-        <span class="equivalent">
-            | <span class="me-pure-profit-per"></span>%
-        </span>
-    </p><br>
-    <p class="text-muted">
-        售价 $ <input class="me-txt-usd-price" type="number" />
+    进价 ¥<input class="me-bid" type="number" />
+    <span>+</span> 销售利润率 <input class="me-profit-per" type="number" value="30" />%
+    <span>+</span> 平台费5%
+    <span>=</span> 售价¥ <span class="me-price"></span>
+    <span class="equivalent">
+        | $<input class="me-txt-usd-price" type="number" />
         <a class="btn btn-primary btn-sm btn-change-price" ba-event="money-exchange,usd-price-change">修改</a>
-    </p>
-    <p class="text-muted">
-        提醒: 出货邮费由平台的运费模版计算
-    </p>
-    <p class="text-muted">
-        1美元=6.8188人民币，1人民币=0.1467美元
-    </p>
+    </span><br> 销售净利润¥ <span class="me-pure-profit"></span>
+    <span class="equivalent">
+        | <span class="me-pure-profit-per"></span>%
+    </span><br><br><br>
+    <div class="text-muted">
+        <li>出售运费：由平台运费模版计算</li>
+        <li>平台费用：由于无法计算 "出售运费"，因此计算偏低</li>
+        <li>货币规则：1美元=6.8300人民币，1人民币=0.1464美元</li>
+    </div>
 </div>
 <script>
+    //销售利润=售价-成本
+    //销售利润率=销售利润/售价|(售价-成本)/售价
+    //销售净利润=销售利润-平台费
+    //销售净利润率=(销售净利润/售价)*100
+    //售价=成本+平台佣金+销售利润+其它
+    //x售价=成本*(1+利润率)/(1-折扣率)*(1+佣金率)
     $(function() {
         var key = 'money-exchange';
-        var usd2cny = 6.8188;
-        var cny2usd = 0.1467;
+        var usd2cny = 6.8300;
+        var cny2usd = 0.1464;
         var container = $('.' + key);
         var bidEl = container.find('.me-bid');
-        var expressFeeEl = container.find('.me-express-fee');
-        var profitPerEl = container.find('.me-profit-per');
-        var pureProfitPerEl = container.find('.me-pure-profit-per');
         var priceEl = container.find('.me-price');
-        var usdPriceEl = container.find('.me-usd-price');
+        // var profitEl = container.find('.me-profit');
+        var profitPerEl = container.find('.me-profit-per');
+        var pureProfitEl = container.find('.me-pure-profit');
+        var pureProfitPerEl = container.find('.me-pure-profit-per');
         var txtUsdPriceEl = container.find('.me-txt-usd-price');
-        var profitEl = container.find('.me-profit');
-        // var showPriceEl = container.find('.me-show-price');
-        var costEl = container.find('.me-cost');
         var btnChangePriceEl = container.find('.btn-change-price');
         var numberEls = container.find('[type="number"]');
         var moneyExchange = function(fieldName) {
-            var bid = parseFloat(bidEl.val()) || 0;
-            var expressFee = parseFloat(expressFeeEl.val()) || 0;
-            var profitPer = parseFloat(profitPerEl.val()) || 0;
-            var usdPrice = parseFloat(txtUsdPriceEl.val()) || 0;
-            var cost = bid + expressFee; //成本
-            var price;
-            var profit;
+            var usdPrice = parseFloat(txtUsdPriceEl.val()) || 0; //售价(美元)
+            var bid = parseFloat(bidEl.val()) || 0; //进价
+            var profitPer = parseFloat(profitPerEl.val()) || 0; //销售利润率
+            var cost = bid; //成本
+            var price; //售价
+            var profit; //销售利润
+            var pureProfit; //销售净利润
+            var pureProfitPer; //销售净利润率
+            var brokerage; //预估佣金，因为不知道出售运费，因此预估偏低
 
+            //通过售价(美元)反推计算
             if (fieldName === '$price' && usdPrice) {
                 price = usdPrice * usd2cny;
-                profit = price - bid - expressFee - price * 0.05;
-                //利润率=(售价-进价-邮费)/(进价+邮费)
-                profitPer = (price - bid - expressFee) / cost;
-                profitPerEl.val(Math.floor(profitPer * 100));
+                brokerage = price * 0.05; //约有误差
+                profitPer = (price - cost - brokerage) / cost;
+                profit = cost * profitPer / 100;
+                profitPerEl.val((profitPer * 100).toFixed(2));
             } else {
-                price = cost + (cost * (profitPer * 0.01));
-                profit = price - bid - expressFee - price * 0.05;
+                profit = cost * profitPer / 100;
+                brokerage = (cost + profit) * 0.05;
+                price = cost + profit + brokerage;
+            }
+
+            pureProfit = price - cost - brokerage;
+            if (pureProfit) {
+                pureProfitPer = (pureProfit / price) * 100;
+            } else {
+                pureProfitPer = 0;
             }
 
             priceEl.text(price.toFixed(2));
-            usdPriceEl.text((price * cny2usd).toFixed(2));
-            profitEl.text(profit.toFixed(2));
-            //纯利润率=(利润/售价)*100
-            if (price) {
-                pureProfitPerEl.text(((profit / price) * 100).toFixed(2));
-            } else {
-                pureProfitPerEl.text('0');
-            }
-            costEl.text(cost);
-            // showPriceEl[price ? 'removeClass' : 'addClass']('hide');
+            // profitEl.text(profit.toFixed(2));
+            pureProfitEl.text(pureProfit.toFixed(2));
+            pureProfitPerEl.text(pureProfitPer.toFixed(2));
+            txtUsdPriceEl.val((price * cny2usd).toFixed(2));
         };
         var showCacheData = function() {
             numberEls.each(function() {
@@ -91,7 +87,7 @@
 
         showCacheData();
         moneyExchange();
-        [bidEl, expressFeeEl, profitPerEl].forEach(function(el) {
+        [bidEl, profitPerEl].forEach(function(el) {
             el.on('input', function() {
                 moneyExchange();
                 setCacheData();
@@ -99,7 +95,6 @@
         });
         btnChangePriceEl.click(function() {
             moneyExchange('$price');
-            txtUsdPriceEl.val('');
             setCacheData();
         });
     });
