@@ -13,7 +13,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180901234439" rel="stylesheet"> 
+    <link href="css/style.css?20180902000729" rel="stylesheet"> 
     
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
@@ -144,7 +144,7 @@
                 <div class="money-exchange">
     进价 ¥<input class="me-bid" type="number" />
     <span>+</span> 销售利润率 <input class="me-profit-per" type="number" value="30" />%
-    <span>+</span> 平台费5%
+    <span>+</span> 平台费率 <input class="me-brokerage-per" type="number" value="5" />%
     <span>=</span> 售价¥ <span class="me-price"></span>
     <span class="equivalent">
         | $<input class="me-txt-usd-price" type="number" />
@@ -175,6 +175,7 @@
         var priceEl = container.find('.me-price');
         // var profitEl = container.find('.me-profit');
         var profitPerEl = container.find('.me-profit-per');
+        var brokeragePerEl = container.find('.me-brokerage-per');
         var pureProfitEl = container.find('.me-pure-profit');
         var pureProfitPerEl = container.find('.me-pure-profit-per');
         var txtUsdPriceEl = container.find('.me-txt-usd-price');
@@ -183,24 +184,25 @@
         var moneyExchange = function(fieldName) {
             var usdPrice = parseFloat(txtUsdPriceEl.val()) || 0; //售价(美元)
             var bid = parseFloat(bidEl.val()) || 0; //进价
-            var profitPer = parseFloat(profitPerEl.val()) || 0; //销售利润率
             var cost = bid; //成本
             var price; //售价
             var profit; //销售利润
+            var profitPer = parseFloat(profitPerEl.val()) || 0; //销售利润率
             var pureProfit; //销售净利润
             var pureProfitPer; //销售净利润率
-            var brokerage; //预估佣金，因为不知道出售运费，因此预估偏低
+            var brokerage; //平台费，因为不知道出售运费，因此预估偏低
+            var brokeragePer = (parseFloat(brokeragePerEl.val()) || 0) / 100; //平台费率
 
             //通过售价(美元)反推计算
             if (fieldName === '$price' && usdPrice) {
                 price = usdPrice * usd2cny;
-                brokerage = price * 0.05; //约有误差
+                brokerage = price * brokeragePer; //约有误差
                 profitPer = (price - cost - brokerage) / cost;
                 profit = cost * profitPer / 100;
                 profitPerEl.val((profitPer * 100).toFixed(2));
             } else {
                 profit = cost * profitPer / 100;
-                brokerage = (cost + profit) * 0.05;
+                brokerage = (cost + profit) * brokeragePer;
                 price = cost + profit + brokerage;
             }
 
@@ -230,7 +232,7 @@
 
         showCacheData();
         moneyExchange();
-        [bidEl, profitPerEl].forEach(function(el) {
+        [bidEl, profitPerEl, brokeragePerEl].forEach(function(el) {
             el.on('input', function() {
                 moneyExchange();
                 setCacheData();
