@@ -9,7 +9,7 @@
     script.onload = function() {
         var container = $($('[name="mainFrame"]')[0].contentWindow.document.body);
         var formEl = container.find('[name="orderSdTJForm"]');
-        var tableEl = formEl.find('#windiv');
+        var tableEl = formEl.find('#dataTable');
         var inputEls = tableEl.find('input[name*=".qtyReq"]');
         var logs = {};
         /**
@@ -75,7 +75,7 @@
         tableEl.css('table-layout', 'inherit');
         detectFn();
         setTimeout(function() {
-            var logCount;
+            var logCount = 0;
 
             detectFn();
             // console.log('行号', '商品名称', '合理定量-需求数量-订货数量');
