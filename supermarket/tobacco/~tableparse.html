@@ -1,0 +1,15 @@
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>
+  $(function () {
+    var data = [];
+    $('table tr').each(function () {
+      var obj = {};
+      $(this).find('input').each(function () {
+        obj[this.name.split('.')[1]] = this.value;
+      });
+      data.push(obj);
+    });
+
+    console.log(JSON.stringify(data));
+  });
+</script>
