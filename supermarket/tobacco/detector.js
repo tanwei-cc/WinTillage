@@ -72,6 +72,7 @@
         }
 
         console.log('开始探测...');
+        tableEl.css('table-layout', 'inherit');
         detectFn();
         setTimeout(function() {
             var logCount;
