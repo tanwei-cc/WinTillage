@@ -41,7 +41,7 @@
 
                 for (var i = 0, l = detectConfigExcludes.length, item; i < l; i++) {
                     item = detectConfigExcludes[i];
-                    if (item === code || item === name || item === (index + 1)) {
+                    if (item == code || item === name || item === (index + 1)) {
                         return;
                     }
                 }

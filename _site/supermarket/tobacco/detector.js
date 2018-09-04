@@ -9,21 +9,19 @@
     script.onload = function() {
         var container = $($('[name="mainFrame"]')[0].contentWindow.document.body);
         var formEl = container.find('[name="orderSdTJForm"]');
-        var tableEl = formEl.find('#windiv');
+        var tableEl = formEl.find('#dataTable');
         var inputEls = tableEl.find('input[name*=".qtyReq"]');
         var logs = {};
         /**
          * @param {Object} detectConfig - 探测配置
-         * @param {Object[]} [detectConfig.excludes] - 排除商品
-         * @param {string} [detectConfig.excludes.name] - 匹配名称
-         * @param {number} [detectConfig.excludes.row] - 所在行数
-         * @param {boolean} [detectConfig.excludes.vague] - 是否模糊匹配
-         * @param {Object} [detectConfig.numHash] - 预定需求数量
-         * @param {number} [detectConfig.numHash<key>] - productCode
-         * @param {number} [detectConfig.numHash<val>] - 需求数量，如果可定数量不够自动减少
+         * @param {string[]} [detectConfig.excludes] - 排除商品：商品名称|商品代码|所在行
+         * @param {Object[]} [detectConfig.includes] - 包含商品
+         * @param {string} [detectConfig.includes.name] - 商品名称|商品代码|所在行
+         * @param {number} [detectConfig.includes.num] - 需求数量，如果可定数量不够自动减少
          */
         var detectConfig = window.detectConfig || {};
         var detectConfigExcludes = detectConfig.excludes || [];
+        var detectConfigIncludes = detectConfig.includes || [];
         var detectFn = function() {
             inputEls.each(function(index) {
                 var el = $(this);
@@ -32,7 +30,7 @@
                 var yuding_num = parseInt(tdEl.prev().find('input').val()); //预定数量
                 var keding_num = parseInt(tdEl.next().find('input').val()); //可定数量
                 var name = tdEl.parent().find('input[name*=".productDesc"]').val() || ''; //商品名称
-                var code = tdEl.parent().find('input[name*=".productCode"]').val() || ''; //商品编号
+                var code = tdEl.parent().find('input[name*=".productCode"]').val() || ''; //商品代码
 
                 if (!yuding_num || num || num === 0) return;
 
@@ -42,12 +40,18 @@
                 }
 
                 for (var i = 0, l = detectConfigExcludes.length, item; i < l; i++) {
-                    item = detectConfigExcludes[i] || {};
-                    if (item.name === name || item.row === (index + 1)) { //精确匹配
+                    item = detectConfigExcludes[i];
+                    if (item == code || item === name || item === (index + 1)) {
                         return;
                     }
-                    if (item.vague && name.indexOf(item.name) > -1) { //模糊匹配
-                        return;
+                }
+
+                for (var i = 0, l = detectConfigIncludes.length, item; i < l; i++) {
+                    item = detectConfigIncludes[i] || {};
+                    if (item.name === code || item.name === name || item.name === (index + 1)) {
+                        if ('num' in item) {
+                            num = item.num;
+                        }
                     }
                 }
 
@@ -72,9 +76,10 @@
         }
 
         console.log('开始探测...');
+        tableEl.css('table-layout', 'inherit');
         detectFn();
         setTimeout(function() {
-            var logCount;
+            var logCount = 0;
 
             detectFn();
             // console.log('行号', '商品名称', '合理定量-需求数量-订货数量');
