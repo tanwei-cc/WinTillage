@@ -69,16 +69,26 @@
     </nav>
 
     <div class="container theme-showcase">
-        <a id="btnGen" class="btn btn-default">生成代码</a>
-        <a id="btnBack" class="btn btn-default">返回</a><br><br>
+        <div class="clearfix">
+            <div class="pull-left">
+                <a id="btnGen" class="btn btn-default">生成代码</a>
+                <a id="btnBack" class="btn btn-default">返回</a>
+            </div>
+            <div class="pull-right">
+                <div class="text-muted">
+                    需求数量：如果不填默认为可定数量，如果可定数量不够则自动减少，如果“排除”则不计算。
+                </div>
+            </div>
+        </div>
+        <br>
         <div style="max-height: 500px;overflow: auto;">
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th style="width:80px">行号</th>
                         <th>商品名称</th>
-                        <th>商品代码</th>
-                        <th>需求数量</th>
+                        <!-- <th>商品代码</th> -->
+                        <th style="width:250px;">需求数量</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -165,8 +175,8 @@
                             '<tr data-code="' + code + '" class="' + className + '">',
                             '<td>' + (index + 1) + '</td>',
                             '<td>' + name + '</td>',
-                            '<td>' + code + '</td>',
-                            '<td><input type="number" value="' + num + '"/></td>',
+                            // '<td>' + code + '</td>',
+                            '<td><input type="number" class="form-control" style="width:80px;" value="' + num + '"/></td>',
                             '<td><a class="btn btn-danger btn-sm">排除</a><a class="btn btn-cancel btn-default btn-sm">取消</a></td>',
                             '</tr>'
                         ].join(''));
