@@ -76,7 +76,7 @@
             </div>
             <div class="pull-right">
                 <div class="text-muted">
-                    需求数量：如果不填默认为可定数量，如果可定数量不够则自动减少，如果“排除”则不计算。
+                    需求数量：如果不填默认为可订数量，如果可订数量不够则自动减少，如果“排除”则不计算。<br>
                 </div>
             </div>
         </div>
@@ -131,13 +131,15 @@
                 tbodyEl.find('tr').each(function() {
                     var el = $(this);
                     var num = parseInt(el.find('input').val());
+                    var name = '' + el.data('name');
                     var code = '' + el.data('code');
 
                     if (el.is('.danger')) {
                         excludes.push(code);
                     } else if (!isNaN(num)) {
                         includes.push({
-                            name: code,
+                            name: name,
+                            code: code,
                             num: num
                         });
                     }
@@ -163,7 +165,7 @@
                         var code = this.productCode;
                         var className = '';
                         var includeItem = includes.find(function(item) {
-                            return item.name === code;
+                            return item.code === code;
                         });
                         var num = includeItem ? includeItem.num : '';
 
@@ -172,7 +174,7 @@
                         }
 
                         html.push([
-                            '<tr data-code="' + code + '" class="' + className + '">',
+                            '<tr data-code="' + code + '" data-name="' + name + '" class="' + className + '">',
                             '<td>' + (index + 1) + '</td>',
                             '<td>' + name + '</td>',
                             // '<td>' + code + '</td>',

@@ -19,7 +19,7 @@
          * @param {string} [detectConfig.includes.name] - 商品名称
          * @param {string} [detectConfig.includes.code] - 商品代码
          * @param {string} [detectConfig.includes.row] - 所在行
-         * @param {number} [detectConfig.includes.num] - 需求数量，如果可定数量不够自动减少
+         * @param {number} [detectConfig.includes.num] - 需求数量，如果可订数量不够自动减少
          */
         var detectConfig = window.detectConfig || {};
         var detectConfigExcludes = detectConfig.excludes || [];
@@ -29,8 +29,8 @@
                 var el = $(this);
                 var tdEl = el.parent();
                 var num = parseInt(el.val()); //需求数量
-                var yuding_num = parseInt(tdEl.prev().find('input').val()); //预定数量
-                var keding_num = parseInt(tdEl.next().find('input').val()); //可定数量
+                var yuding_num = parseInt(tdEl.prev().find('input').val()); //预订数量
+                var keding_num = parseInt(tdEl.next().find('input').val()); //可订数量
                 var name = tdEl.parent().find('input[name*=".productDesc"]').val() || ''; //商品名称
                 var code = tdEl.parent().find('input[name*=".productCode"]').val() || ''; //商品代码
 
@@ -86,7 +86,7 @@
             var logCount = 0;
 
             detectFn();
-            // console.log('行号', '商品名称', '合理定量-需求数量-订货数量');
+            // console.log('行号', '商品名称', '合理订量-需求数量-订货数量');
             $.each(logs, function(idx, log) {
                 logCount++;
                 console.log(log.row, log.name, log.yuding_num + '-' + log.num + '-' + log.keding_num);
