@@ -16,7 +16,9 @@
          * @param {Object} detectConfig - 探测配置
          * @param {string[]} [detectConfig.excludes] - 排除商品：商品名称|商品代码|所在行
          * @param {Object[]} [detectConfig.includes] - 包含商品
-         * @param {string} [detectConfig.includes.name] - 商品名称|商品代码|所在行
+         * @param {string} [detectConfig.includes.name] - 商品名称
+         * @param {string} [detectConfig.includes.code] - 商品代码
+         * @param {string} [detectConfig.includes.row] - 所在行
          * @param {number} [detectConfig.includes.num] - 需求数量，如果可定数量不够自动减少
          */
         var detectConfig = window.detectConfig || {};
@@ -32,13 +34,14 @@
                 var name = tdEl.parent().find('input[name*=".productDesc"]').val() || ''; //商品名称
                 var code = tdEl.parent().find('input[name*=".productCode"]').val() || ''; //商品代码
 
-                if (!yuding_num || num || num === 0) return;
+                if (!yuding_num) return;
 
                 num = yuding_num;
                 if (!isNaN(keding_num)) {
                     num = Math.min(yuding_num, keding_num);
                 }
 
+                //排除处理
                 for (var i = 0, l = detectConfigExcludes.length, item; i < l; i++) {
                     item = detectConfigExcludes[i];
                     if (item == code || item === name || item === (index + 1)) {
@@ -46,16 +49,17 @@
                     }
                 }
 
+                //包含处理
                 for (var i = 0, l = detectConfigIncludes.length, item; i < l; i++) {
                     item = detectConfigIncludes[i] || {};
-                    if (item.name === code || item.name === name || item.name === (index + 1)) {
+                    if (item.code === code || item.name === name || item.row === (index + 1)) {
                         if ('num' in item) {
                             num = item.num;
                         }
                     }
                 }
 
-                if (num === parseInt(el.val())) return; //数量无变化
+                if (num === parseInt(el.val())) return; //数量无变化，无需探测
 
                 logs[index] = {
                     row: index + 1,
