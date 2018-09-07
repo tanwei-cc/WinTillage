@@ -59,6 +59,16 @@
                     }
                 }
 
+                if (keding_num) {
+                    if (keding_num > num) {
+                        num = keding_num;
+                    }
+                } else if (yuding_num) {
+                    if (yuding_num > num) {
+                        num = yuding_num;
+                    }
+                }
+
                 if (!num) return;
                 if (num === parseInt(el.val())) return; //数量无变化，无需探测
 
