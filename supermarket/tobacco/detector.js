@@ -60,11 +60,11 @@
                 }
 
                 if (keding_num) { //需求数量不能大于可定数量
-                    if (keding_num > num) {
+                    if (num > keding_num) {
                         num = keding_num;
                     }
                 } else if (yuding_num) { //需求数量不能大于预定数量
-                    if (yuding_num > num) {
+                    if (num > yuding_num) {
                         num = yuding_num;
                     }
                 }
