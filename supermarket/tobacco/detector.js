@@ -84,7 +84,7 @@
             });
         }
 
-        console.log(inputEls, tableEl, formEl, container);
+        // console.log(inputEls, tableEl, formEl, container);
         if (!inputEls.size()) {
             console.log('【探测失败】获取元素失败！！！');
             return;
