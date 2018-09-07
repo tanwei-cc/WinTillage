@@ -34,11 +34,11 @@
                 var name = tdEl.parent().find('input[name*=".productDesc"]').val() || ''; //商品名称
                 var code = tdEl.parent().find('input[name*=".productCode"]').val() || ''; //商品代码
 
-                if (!yuding_num) return;
+                // if (!yuding_num) return;
 
                 num = yuding_num;
                 if (!isNaN(keding_num)) {
-                    num = Math.min(yuding_num, keding_num);
+                    num = Math.min(yuding_num || 0, keding_num);
                 }
 
                 //排除处理
@@ -59,6 +59,7 @@
                     }
                 }
 
+                if (!num) return;
                 if (num === parseInt(el.val())) return; //数量无变化，无需探测
 
                 logs[index] = {
@@ -94,9 +95,9 @@
             console.log('修改商品数量', logCount);
             console.log('探测结束');
 
-            if (detectConfig.autoSubmit) {
-                formEl.submit();
-            }
+            // if (detectConfig.autoSubmit) { //自动提交
+            formEl.submit();
+            // }
         }, 5000);
     };
     document.getElementsByTagName("head")[0].appendChild(script);
