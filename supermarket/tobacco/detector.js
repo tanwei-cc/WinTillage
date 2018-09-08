@@ -75,7 +75,7 @@
                 logs[index] = {
                     row: index + 1,
                     name: name,
-                    yuding_num: yuding_num,
+                    yuding_num: yuding_num || '空',
                     num: num,
                     keding_num: keding_num || '空'
                 };

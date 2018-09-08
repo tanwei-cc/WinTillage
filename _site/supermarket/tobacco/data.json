@@ -3447,5 +3447,9 @@
         "qtyReq": "",
         "qtyOrder": "",
         "amtOrder": "0.00"
+    },
+    {
+        "productCode": "001",
+        "productDesc": "红旗渠(雪茄)"
     }
 ]
