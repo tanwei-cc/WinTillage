@@ -178,14 +178,14 @@ title: 烟草订购探测程序配置
                     }
                 });
 
-                $.each(excludes, function(idx, str) {
-                    excludes[idx] = str.replace(/^\[|\]$/g, '');
-                });
-
                 config.includes = includes;
                 config.excludes = excludes;
                 configStr = JSON.stringify(config);
                 localStorage[key] = configStr;
+
+                $.each(excludes, function (idx, str) {
+                    excludes[idx] = str.replace(/^\[|\]$/g, '');
+                });
 
                 return config;
             };
