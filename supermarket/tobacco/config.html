@@ -290,6 +290,7 @@ title: 烟草订购探测程序配置
                 btnBackEl.show();
                 page1El.hide();
                 page2El.show();
+                txtSearchEl.hide();
                 getDetectorJSCode().then(function(jsCode){
                     codeEl.val(codeTpl.replace(/\{detectConfig\}/, JSON.stringify(config)).replace(/\{detectorJSCode\}/, jsCode));
                 });
@@ -307,6 +308,7 @@ title: 烟草订购探测程序配置
                 btnBackEl.hide();
                 page1El.show();
                 page2El.hide();
+                txtSearchEl.show();
             });
 
             tbodyEl.on('click', '.btn-danger', function() {
