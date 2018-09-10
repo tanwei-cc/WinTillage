@@ -5,10 +5,11 @@
 (function() {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = "https://cdn.bootcss.com/jquery/1.9.1/jquery.min.js";
+    script.src = "//cdn.bootcss.com/jquery/1.9.1/jquery.min.js";
     script.onload = function() {
         var container = $($('[name="mainFrame"]')[0].contentWindow.document.body);
         var formEl = container.find('[name="orderSdTJForm"]');
+        var btnSaveEl = container.find('#save');
         var tableEl = formEl.find('#dataTable');
         var inputEls = tableEl.find('input[name*=".qtyReq"]');
         var logs = {};
@@ -36,10 +37,10 @@
 
                 // if (!yuding_num) return;
 
-                num = yuding_num;
-                if (!isNaN(keding_num)) {
-                    num = Math.min(yuding_num || 0, keding_num);
-                }
+                // num = yuding_num;
+                // if (!isNaN(keding_num)) {
+                //     num = Math.min(yuding_num || 0, keding_num);
+                // }
 
                 //排除处理
                 for (var i = 0, l = detectConfigExcludes.length, item; i < l; i++) {
@@ -53,11 +54,13 @@
                 for (var i = 0, l = detectConfigIncludes.length, item; i < l; i++) {
                     item = detectConfigIncludes[i] || {};
                     if (item.code === code || item.name === name || item.row === (index + 1)) {
-                        if ('num' in item) {
-                            num = item.num;
+                        if (item.num) {
+                            num = parseInt(item.num);
                         }
                     }
                 }
+
+                if (!num || isNaN(num)) return; //无需处理，即刻返回
 
                 if (keding_num) { //需求数量不能大于可定数量
                     if (num > keding_num) {
@@ -69,18 +72,20 @@
                     }
                 }
 
-                if (!num) return;
                 if (num === parseInt(el.val())) return; //数量无变化，无需探测
 
                 logs[index] = {
                     row: index + 1,
                     name: name,
-                    yuding_num: yuding_num,
+                    yuding_num: yuding_num || '空',
                     num: num,
                     keding_num: keding_num || '空'
                 };
 
                 el.val(num);
+                setTimeout(function() {
+                    el.trigger("change");
+                }, 50 * (index + 1));
             });
         }
 
@@ -90,7 +95,7 @@
             return;
         }
 
-        console.log('开始探测...');
+        console.log('>>>开始探测<<<');
         tableEl.css('table-layout', 'inherit');
         detectFn();
         setTimeout(function() {
@@ -103,12 +108,27 @@
                 console.log(log.row, log.name, log.yuding_num + '-' + log.num + '-' + log.keding_num);
             });
             console.log('修改商品数量', logCount);
-            console.log('探测结束');
 
-            // if (detectConfig.autoSubmit) { //自动提交
-            formEl.submit();
-            // }
-        }, 5000);
+            if (logCount) {
+                // if (detectConfig.autoSubmit) { //自动提交
+                var counter = 0;
+                var intervalTimer = setInterval(function() {
+                    counter++;
+                    if (counter > 20) {
+                        clearInterval(intervalTimer);
+                        return;
+                    }
+                    btnSaveEl.click();
+                    console.log('提交(次)' + counter);
+                    if (counter === 20) {
+                        console.log('<<<探测完成>>>');
+                    }
+                }, 100);
+                // }
+            } else {
+                console.log('<<<探测完成>>>');
+            }
+        }, 3000);
     };
     document.getElementsByTagName("head")[0].appendChild(script);
 })();

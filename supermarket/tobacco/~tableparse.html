@@ -2,14 +2,16 @@
 <script>
   $(function () {
     var data = [];
-    $('table tr').each(function () {
+    $('#dataTable tr').each(function () {
       var obj = {};
       $(this).find('input').each(function () {
         obj[this.name.split('.')[1]] = this.value;
       });
-      data.push(obj);
+      if (!$.isEmptyObject(obj)) {
+        data.push(obj);
+      }
     });
 
-    console.log(JSON.stringify(data));
+    console.log('总共：' + data.length, JSON.stringify(data));
   });
 </script>

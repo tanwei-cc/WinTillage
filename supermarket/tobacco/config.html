@@ -1,5 +1,5 @@
 --- 
-title: 烟草订购探测程序配置
+title: 烟草订购探测程序配置 
 ---
 
 <!DOCTYPE html>
@@ -14,18 +14,31 @@ title: 烟草订购探测程序配置
     <link rel="shortcut icon" href="favicon.ico">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="pinyin.js"></script>
     <style>
         pre {
             white-space: pre-line;
         }
-
-        #btnBack {
+        
+        .btn-back {
+            display: none;
+        }
+        
+        .txt-search {
+            width: 200px;
+            display: inline-block;
+        }
+        
+        .page2 {
             display: none;
         }
         
         #code {
-            display: none;
-            height: 400px;
+            height: 280px;
+        }
+        
+        .table-wrapper {
+            overflow: auto;
         }
         
         tr .btn-danger {
@@ -73,52 +86,66 @@ title: 烟草订购探测程序配置
     </nav>
 
     <div class="container theme-showcase">
-        <div class="clearfix">
+        <div class="clearfix text-center">
             <div class="pull-left">
-                <a id="btnGen" class="btn btn-default">生成代码</a>
-                <a id="btnBack" class="btn btn-default">返回</a>
+                <a class="btn btn-gen btn-default">生成代码</a>
+                <a class="btn btn-back btn-default">返回</a>
             </div>
+            <input class="txt-search form-control" placeholder="输入商品名称(可拼音)" />
             <div class="pull-right">
                 <div class="text-muted">
-                    需求数量：如果不填默认为可订数量，如果可订数量不够则自动减少，如果“排除”则不计算。<br>
-                    打开调试工具：Fn + F12，选择控制台黏贴代码
+                    需求数量：如果可订数量不够则自动减少<br> 打开调试工具：Fn + F12，选择控制台粘贴代码
                 </div>
             </div>
         </div>
         <br>
-        <div style="max-height: 500px;overflow: auto;">
-            <table class="table table-striped table-bordered">
+        <div class="page1">
+            <table class="table table-striped table-bordered" style="margin-bottom: 0">
                 <thead>
                     <tr>
                         <th style="width:80px">行号</th>
                         <th>商品名称</th>
                         <!-- <th>商品代码</th> -->
-                        <th style="width:250px;">需求数量</th>
-                        <th>操作</th>
+                        <th style="width:100px;">预定数量</th>
+                        <th style="width:100px;">需求数量</th>
+                        <th style="width:100px;">可定数量</th>
+                        <th style="width:80px">操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
             </table>
+            <div class="table-wrapper">
+                <table class="table table-content table-striped table-bordered">
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <textarea id="code" class="form-control"></textarea>
+        <div class="page2">
+            <h5>排除字符串</h5>
+            <textarea class="form-control"></textarea><br>
+            <a class="btn btn-gen btn-primary btn-sm">生成代码</a><br><br>
+            <textarea id="code" class="form-control"></textarea>
+        </div>
     </div>
-    <pre id="codeTpl" class="hide">
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "https://tanwei-cc.github.io/WinTillage/supermarket/tobacco/detector.js?" + (+new Date);
+<pre id="codeTpl" class="hide">
     window.detectConfig={detectConfig};
-    document.getElementsByTagName("head")[0].appendChild(script);
+    {detectorJSCode}
 </pre>
     <script>
         $(function() {
             var key = 'detectConfig';
-            var tableEl = $('.table');
+            var detectorJSCode;
+            var tableWrapperEl = $('.table-wrapper');
+            var tableEl = $('.table-content');
             var tbodyEl = tableEl.find('>tbody');
-            var btnGenEl = $('#btnGen');
-            var btnBackEl = $('#btnBack');
+            var page1El = $('.page1');
+            var page2El = $('.page2');
+            var btnGenEl = $('.btn-gen');
+            var btnBackEl = $('.btn-back');
             var codeEl = $('#code');
+            var txtExcludesEl = page2El.find('textarea');
             var codeTpl = $('#codeTpl').html();
+            var txtSearchEl = $('.txt-search');
             var getConfig = function() {
                 var config = localStorage[key];
                 if (config) {
@@ -130,7 +157,8 @@ title: 烟草订购探测程序配置
             };
             var setConfig = function() {
                 var config = {};
-                var excludes = [];
+                var configStr;
+                var excludes = txtExcludesEl.val().match(/\[[^\]]+\]/g) || [];
                 var includes = [];
 
                 tbodyEl.find('tr').each(function() {
@@ -150,12 +178,54 @@ title: 烟草订购探测程序配置
                     }
                 });
 
-                config.excludes = excludes;
+                $.each(excludes, function(idx, str) {
+                    excludes[idx] = str.replace(/^\[|\]$/g, '');
+                });
+
                 config.includes = includes;
-                config = JSON.stringify(config);
-                localStorage[key] = config;
+                config.excludes = excludes;
+                configStr = JSON.stringify(config);
+                localStorage[key] = configStr;
 
                 return config;
+            };
+            var getDetectorJSCode = function(){
+                return $.Deferred(function(deferred) {
+                    if(!detectorJSCode){
+                        $.get(`detector.js`).then(function(res) {
+                            detectorJSCode = res;
+                            deferred.resolve(detectorJSCode);
+                        });
+                    }
+                    else{
+                        deferred.resolve(detectorJSCode);
+                    }
+                });
+            };
+            var matchSearch = function(data) {
+                var query;
+                var pinyin;
+                var pinyin_fullchars;
+                var pinyin_camelchars;
+                var matchs;
+
+                data = data || {};
+                query = txtSearchEl.val().toLowerCase().trim();
+                
+                if (!query) return;
+
+                pinyin = new Pinyin();
+                pinyin_fullchars = (pinyin).getFullChars(data.name);
+                pinyin_camelchars = (pinyin).getCamelChars(data.name);
+                matchs = [data.name, pinyin_fullchars.toLowerCase(), pinyin_camelchars.toLowerCase()];
+
+                for (var i = 0, l = matchs.length; i < l; i++) {
+                    if (matchs[i].indexOf(query) > -1) {
+                        return true;
+                    }
+                }
+
+                return false;
             };
             var render = function() {
                 var config = getConfig();
@@ -166,13 +236,20 @@ title: 烟草订购探测程序配置
                     var html = [];
 
                     $.each(res, function(index) {
-                        var name = this.productDesc;
-                        var code = this.productCode;
+                        var name = this.productDesc || '';
+                        var code = this.productCode || '';
                         var className = '';
                         var includeItem = includes.find(function(item) {
                             return item.code === code;
                         });
                         var num = includeItem ? includeItem.num : '';
+
+                        if(matchSearch({ 
+                            name: name,
+                            code: code
+                        }) === false){
+                            return;
+                        }
 
                         if (excludes.indexOf(code) > -1) {
                             className = 'danger';
@@ -180,11 +257,16 @@ title: 烟草订购探测程序配置
 
                         html.push([
                             '<tr data-code="' + code + '" data-name="' + name + '" class="' + className + '">',
-                            '<td>' + (index + 1) + '</td>',
+                            '<td style="width:80px;">' + (index + 1) + '</td>',
                             '<td>' + name + '</td>',
                             // '<td>' + code + '</td>',
-                            '<td><input type="number" class="form-control" style="width:80px;" value="' + num + '"/></td>',
-                            '<td><a class="btn btn-danger btn-sm">排除</a><a class="btn btn-cancel btn-default btn-sm">取消</a></td>',
+                            '<td style="width:100px;"></td>',
+                            '<td style="width:100px;"><input type="number" class="form-control" value="' + num + '"/></td>',
+                            '<td style="width:100px;"></td>',
+                            '<td style="width:80px;">',
+                            // '<a class="btn btn-danger btn-sm">排除</a>',
+                            // '<a class="btn btn-cancel btn-default btn-sm">取消</a>',
+                            '</td>',
                             '</tr>'
                         ].join(''));
                     });
@@ -193,40 +275,52 @@ title: 烟草订购探测程序配置
                 });
             };
 
+            tableWrapperEl.height($(window).height() - 170);
             render();
 
             btnGenEl.click(function() {
                 var config = setConfig();
+                var excludes = config.excludes;
 
-                codeEl.val(codeTpl.replace(/\{detectConfig\}/, config));
-                codeEl.show();
+                if (excludes.length) {
+                    txtExcludesEl.val('[' + excludes.join('][') + ']');
+                }
+
+                btnGenEl.eq(0).hide();
+                btnBackEl.show();
+                page1El.hide();
+                page2El.show();
+                getDetectorJSCode().then(function(jsCode){
+                    codeEl.val(codeTpl.replace(/\{detectConfig\}/, JSON.stringify(config)).replace(/\{detectorJSCode\}/, jsCode));
+                });
                 codeEl.select();
                 try {
                     document.execCommand('copy');
-                    setTimeout(function(){
+                    setTimeout(function() {
                         alert('代码已复制，ctrl+v即可黏贴');
                     }, 100);
-                } catch (e) { }
-                tableEl.hide();
-                btnGenEl.hide();
-                btnBackEl.show();
+                } catch (e) {}
             });
 
             btnBackEl.click(function() {
-                tableEl.show();
-                codeEl.hide();
-                btnGenEl.show();
+                btnGenEl.eq(0).show();
                 btnBackEl.hide();
+                page1El.show();
+                page2El.hide();
             });
 
             tbodyEl.on('click', '.btn-danger', function() {
-                $(this).parents('tr').addClass('danger');
-                setConfig();
+                // $(this).parents('tr').addClass('danger');
+                // setConfig();
             }).on('click', '.btn-cancel', function() {
-                $(this).parents('tr').removeClass('danger');
+                // $(this).parents('tr').removeClass('danger');
+                // setConfig();
+            }).on('input', 'input', function() {
                 setConfig();
-            }).on('input', 'input', function(){
-                setConfig();
+            });
+
+            txtSearchEl.on('input', function() {
+                render();
             });
         });
     </script>
