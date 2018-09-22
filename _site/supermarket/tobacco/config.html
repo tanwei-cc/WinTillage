@@ -174,14 +174,14 @@
                     }
                 });
 
-                $.each(excludes, function(idx, str) {
-                    excludes[idx] = str.replace(/^\[|\]$/g, '');
-                });
-
                 config.includes = includes;
                 config.excludes = excludes;
                 configStr = JSON.stringify(config);
                 localStorage[key] = configStr;
+
+                $.each(excludes, function (idx, str) {
+                    excludes[idx] = str.replace(/^\[|\]$/g, '');
+                });
 
                 return config;
             };
@@ -247,9 +247,9 @@
                             return;
                         }
 
-                        if (excludes.indexOf(code) > -1) {
-                            className = 'danger';
-                        }
+                        // if (excludes.indexOf(code) > -1) {
+                        //     className = 'danger';
+                        // }
 
                         html.push([
                             '<tr data-code="' + code + '" data-name="' + name + '" class="' + className + '">',
@@ -286,16 +286,19 @@
                 btnBackEl.show();
                 page1El.hide();
                 page2El.show();
+                txtSearchEl.hide();
                 getDetectorJSCode().then(function(jsCode){
                     codeEl.val(codeTpl.replace(/\{detectConfig\}/, JSON.stringify(config)).replace(/\{detectorJSCode\}/, jsCode));
-                });
-                codeEl.select();
-                try {
-                    document.execCommand('copy');
-                    setTimeout(function() {
-                        alert('代码已复制，ctrl+v即可黏贴');
+                    setTimeout(function(){
+                        codeEl.select();
+                        try {
+                            document.execCommand('copy');
+                            setTimeout(function() {
+                                alert('代码已复制，ctrl+v即可黏贴');
+                            }, 100);
+                        } catch (e) {}
                     }, 100);
-                } catch (e) {}
+                });
             });
 
             btnBackEl.click(function() {
@@ -303,6 +306,7 @@
                 btnBackEl.hide();
                 page1El.show();
                 page2El.hide();
+                txtSearchEl.show();
             });
 
             tbodyEl.on('click', '.btn-danger', function() {

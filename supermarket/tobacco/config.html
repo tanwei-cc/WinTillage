@@ -293,14 +293,16 @@ title: 烟草订购探测程序配置
                 txtSearchEl.hide();
                 getDetectorJSCode().then(function(jsCode){
                     codeEl.val(codeTpl.replace(/\{detectConfig\}/, JSON.stringify(config)).replace(/\{detectorJSCode\}/, jsCode));
-                });
-                codeEl.select();
-                try {
-                    document.execCommand('copy');
-                    setTimeout(function() {
-                        alert('代码已复制，ctrl+v即可黏贴');
+                    setTimeout(function(){
+                        codeEl.select();
+                        try {
+                            document.execCommand('copy');
+                            setTimeout(function() {
+                                alert('代码已复制，ctrl+v即可黏贴');
+                            }, 100);
+                        } catch (e) {}
                     }, 100);
-                } catch (e) {}
+                });
             });
 
             btnBackEl.click(function() {
