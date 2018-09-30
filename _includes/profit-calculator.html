@@ -71,7 +71,7 @@
                 ${Math.ceil(discountProfitPer)}% | $${(discountProfitPrice*cny2usd).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
             `);
             pureProfitEl.text(`
-                ${Math.ceil(pureProfitPricePer)}% | $${((pureProfitPricePer*cny2usd)).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
+                ${Math.ceil(pureProfitPricePer)}% | $${((pureProfitPrice*cny2usd)).toFixed(2)} | ¥${pureProfitPrice.toFixed(2)}
             `);
             discountPriceEl.text(`$${(discountPrice*cny2usd).toFixed(2)} | ¥${discountPrice.toFixed(2)}`);
         };
