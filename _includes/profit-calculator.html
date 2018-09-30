@@ -52,7 +52,7 @@
                 discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
                 pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
                 pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
-                discountPrice = (price - discountRatePrice) * cny2usd;
+                discountPrice = price - discountRatePrice;
             }
 
             console.log([
@@ -68,12 +68,12 @@
             ].join('\n'));
 
             discountProfitEl.text(`
-                ${Math.ceil(discountProfitPer)}% | $ ${(discountProfitPrice*cny2usd).toFixed(2)}
+                ${Math.ceil(discountProfitPer)}% | $${(discountProfitPrice*cny2usd).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
             `);
             pureProfitEl.text(`
-                ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
+                ${Math.ceil(pureProfitPricePer)}% | $${((pureProfitPricePer*cny2usd)).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
             `);
-            discountPriceEl.text('$ ' + discountPrice.toFixed(2));
+            discountPriceEl.text(`$${(discountPrice*cny2usd).toFixed(2)} | ¥${discountPrice.toFixed(2)}`);
         };
         var showCacheData = function() {
             numberEls.each(function() {
