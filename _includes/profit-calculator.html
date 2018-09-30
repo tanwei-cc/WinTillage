@@ -1,0 +1,90 @@
+<!-- 利润计算器 -->
+<div class="profit-calculator calculator">
+    <span>原售价($) <input class="me-price" type="number" /> - </span>
+    <span>成本(¥) <input class="me-bid" type="number" /> - </span><br>
+    <span>折扣率(%) <input class="me-discount-rate" type="number" /> - </span>
+    <span>平台佣金(%) <input class="me-platform-per" type="number" value="5" /> - </span><br>
+    <span>其他(¥) <input class="me-other-cost" type="number" /></span>
+    <br><br>
+    <div class="text-primary">
+        折后利润 <span class="me-discount-profit"></span>
+    </div>
+    <div class="text-primary">
+        净利润 <span class="me-pure-profit"></span>
+    </div><br>
+    <div class="text-muted">
+        <li>成本=进价+邮</li>
+        <li>折后利润=原售价-成本-折扣率</li>
+        <li>净利润=折后利润-平台佣金-其他</li>
+    </div>
+</div>
+<script>
+    $(function() {
+        var key = 'profit-calculator';
+        var usd2cny = 6.86800;
+        var cny2usd = 0.1456;
+        var container = $('.' + key);
+        var priceEl = container.find('.me-price');
+        var bidEl = container.find('.me-bid');
+        var discountRateEl = container.find('.me-discount-rate');
+        var platformPerEl = container.find('.me-platform-per');
+        var otherCostEl = container.find('.me-other-cost');
+        var discountProfitEl = container.find('.me-discount-profit');
+        var pureProfitEl = container.find('.me-pure-profit');
+        var numberEls = container.find('[type="number"]');
+        var moneyExchange = function(fieldName) {
+            var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
+            var bid = parseFloat(bidEl.val()) || 0; //进价
+            var discountRatePrice = (parseFloat(discountRateEl.val() || 0) / 100) * price; //折扣金额
+            var platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * price; //平台金额
+            var discountProfitPrice = 0; //折后利润
+            var discountProfitPer = 0; //折后利润率
+            var pureProfitPrice = 0; //净利润
+            var pureProfitPricePer = 0; //净利润率
+
+            if (price) {
+                discountProfitPrice = price - bid - discountRatePrice;
+                discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
+                pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
+                pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
+            }
+
+            console.log([
+                "原售价: ¥" + price,
+                "成本: ¥" + bid,
+                "折扣金额: ¥" + discountRatePrice,
+                "平台金额: ¥" + platformPrice,
+                "折后利润: ¥" + discountProfitPrice,
+                "折后利润率: " + discountProfitPer + "%",
+                "净利润: ¥" + pureProfitPrice,
+                "净利润率: " + pureProfitPricePer + "%"
+            ].join('\n'));
+
+            discountProfitEl.text(`
+                ${Math.ceil(discountProfitPer)}% | $ ${(discountProfitPrice*cny2usd).toFixed(2)}
+            `);
+            pureProfitEl.text(`
+                ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
+            `);
+        };
+        var showCacheData = function() {
+            numberEls.each(function() {
+                this.value = localStorage[this.className] || this.value || '';
+            });
+        };
+        var setCacheData = function() {
+            numberEls.each(function() {
+                localStorage[this.className] = this.value || '';
+            });
+        };
+
+        showCacheData();
+        moneyExchange();
+        [priceEl, bidEl, discountRateEl, platformPerEl, otherCostEl].forEach(function(el) {
+            el.on('input', function() {
+                moneyExchange();
+                setCacheData();
+            });
+        });
+    });
+</script>

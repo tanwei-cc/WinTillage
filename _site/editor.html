@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit|ie-comp|ie-stand" />
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WinTillage</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
+    <link href="css/style.css?20180930122441" rel="stylesheet"> 
+    
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?3d2d14d4d61d82442977f4ad8763c75f";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<script>
+    /**
+     * 事件追踪
+     * @param {string} category - 要监控的目标的类型名称，通常是同一组目标的名字，比如”视频”、”音乐”、”软件”、”游戏”等等。
+     * @param {string} action - 用户跟目标交互的行为，如”播放”、”暂停”、”下载”等等。
+     * @param {string} [opt_label] - 事件的一些额外信息，通常可以是歌曲的名称、软件的名称、链接的名称等等。
+     * @param {string} [opt_value] - 事件的一些数值信息，比如权重、时长、价格等等，在报表中可以看到其平均值等数据。
+     */
+    function trackEvent(category, action, opt_label, opt_value) {
+        if (category && action) {
+            _hmt.push(['_trackEvent', category, action, opt_label || '', opt_value || '']);
+        }
+    }
+    
+    $(function() {
+        var bodyEl = $(document.body);
+
+        bodyEl.on("click", "[ba-event]", function() {
+            var it = $(this);
+            var values = (it.attr("ba-event") || "").split(",");
+            if (values.length > 1) {
+                trackEvent.apply(null, values);
+            }
+        });
+
+        bodyEl.on('click', 'a[href]', function(ev) {
+            var el = $(this);
+            var text = el.text();
+            var href = el.attr('href');
+
+            if (href && href !== '#') {
+                trackEvent('link', 'to', href, text);
+            }
+        });
+    });
+</script>
+</head>
+
+<body>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">
+                    <img src="favicon.ico" class="logo" />
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <!-- <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">工具
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            
+                            <li>
+                                <a href="/2018/08/27/tools-money-exchange.html">货币兑换计算器</a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                </ul> -->
+                <!-- <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            常用链接<span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="https://docs.qq.com/sheet/BmAfQN2sop2v1PD3Vf3ahkL33GDWKK3baohy05BGA62tyoU03Cpduu0IAjCH0EBPWM0noU5K3?opendocxfrom=admin" target="_blank">【文档】商品型号</a></li>
+                            <li><a href="http://merchant.fy.intmall.net/main/panel" target="_blank">【管理】丰卖网</a></li>
+                            <li><a href="http://en.intmall.com/category/41.html" target="_blank">【耳机】丰卖网</a></li>
+                            <li><a href="https://www.aliexpress.com/category/200010206/smart-watches.html?spm=2114.search0103.0.0.5eba3e706EzqQ2&isrefine=y&site=glo&g=y&tag=" target="_blank">【智能手表】速卖通</a></li>
+                            <li><a href="https://www.aliexpress.com/category/63705/earphones-headphones.html?spm=2114.search0103.1.19.960526c3aee6Mk&site=glo" target="_blank">【耳机】速卖通</a></li>
+                            <li><a href="https://www.amazon.com/s/ref=nb_sb_ss_ime_c_2_11?url=search-alias%3Delectronics&field-keywords=smart+watch&sprefix=smart+watch%2Caps%2C111&crid=2TR46ERJH0UHF" target="_blank">【智能手表】亚马逊</a></li>
+                            <li><a href="https://www.amazon.com/Headphones-Accessories-Supplies/b/ref=nav_shopall_headphones?ie=UTF8&node=172541" target="_blank">【耳机】亚马逊</a></li>
+                        </ul>
+                    </li>
+                </ul> -->
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            工具<span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="editor.html">内容编辑器</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
+    <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
+
+    <div class="container theme-showcase" role="main">
+        <script>
+    trackEvent('editor-page', 'load');
+</script>
+<div class="row">
+    <div class="editor">
+    <div>
+        <a class="btn btn-clear btn-default btn-sm" ba-event="editor,clear">清空</a>
+        <a class="btn btn-only-img btn-info btn-sm">清空非图片</a>
+        <a class="btn btn-img-preview btn-primary btn-sm" ba-event="editor,img-preview">图片预览</a>
+        <!-- <a class="btn btn-img-download btn-success btn-sm" data-toggle="modal" data-target=".editor-im-download">图片下载</a> -->
+        <!-- <a class="btn btn-warning"></a> 
+        <a class="btn btn-danger"></a> -->
+        &nbsp;&nbsp;
+        <span class="text-muted">复制内容：点击编辑器Command + C</span>
+    </div><br>
+    <textarea></textarea> 
+    <!-- <div class="editor-im-download modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">图片下载</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>图片</th>
+                            <th>尺寸</th>
+                            <th>名称</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+</div>
+<script>
+    $(function() {
+        var key = 'editor';
+        var container = $('.' + key);
+        var textareaEl = container.find('>textarea');
+        var btnClearEl = container.find('.btn-clear');
+        var btnImgPreviewEl = container.find('.btn-img-preview');
+        var btnOnlyImgEl = container.find('.btn-only-img');
+        // var btnImgDownloadEl = container.find('.btn-img-download');
+        // var tbodyEl = container.find('tbody');
+        var config = {
+            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
+            htmlDoNotWrapTags: ['script', 'style'],
+            htmlExecuteScripts: false
+        };
+        var viewer;
+        var getCacheData = function() {
+            return localStorage[key + '_content'] || '';
+        };
+        var setCacheData = function(val) {
+            localStorage[key + '_content'] = val || '';
+        };
+        var getHtml = function() {
+            return textareaEl.froalaEditor('html.get');
+        };
+        var getImgEls = function() {
+            return $(getHtml()).find('img');
+        };
+        var getImgsHtml = function() {
+            var html = [];
+
+            getImgEls().each(function() {
+                html.push(this.outerHTML);
+            });
+            return html.join('');
+        };
+        var initViewew = function() {
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(container.find('.fr-view')[0]);
+                    container.find('.fr-view').on('hidden', function() {
+                        viewer.destroy();
+                    });
+                    viewer.show();
+                } else {
+                    viewer.update();
+                    viewer.show();
+                }
+            } catch (ex) {}
+        };
+        var initEditor = function() {
+            var cacheData = getCacheData();
+
+            textareaEl.froalaEditor('destroy');
+            textareaEl.val('');
+            textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
+                var html = editor.html.get();
+                setCacheData(html);
+                trackEvent('editor', 'content-change');
+            });
+            textareaEl.froalaEditor({
+                htmlRemoveTags: ['script', 'style', 'base'],
+                htmlExecuteScripts: false
+            });
+            cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
+        };
+
+        initEditor();
+
+        btnClearEl.click(function() {
+            setCacheData('');
+            initEditor();
+        });
+
+        btnImgPreviewEl.click(function() {
+            initViewew();
+        });
+
+        btnOnlyImgEl.click(function() {
+            var html = getImgsHtml();
+
+            if (!html) return;
+
+            setCacheData(html);
+            initEditor();
+        });
+
+        // btnImgDownloadEl.click(function() {
+        //     var els = getImgEls();
+        //     var html = [];
+
+        //     els.each(function(index) {
+        //         var src = this.src;
+        //         var download = index + 1;
+
+        //         if (download < 10) {
+        //             download = '0' + download;
+        //         }
+
+        //         html.push([
+        //             '<tr>',
+        //             '<td>',
+        //             '<a href="' + src + '" download="' + download + '">',
+        //             '<img src="' + src + '">下载',
+        //             '</a>',
+        //             '</td>',
+        //             '<td>' + this.width + '*' + this.height + '</td>',
+        //             '<td><input value="' + download + '""/></td>',
+        //             '<tr>'
+        //         ].join(''));
+        //     });
+
+        //     tbodyEl.html(html.join(''));
+        // });
+
+        // tbodyEl.on('input', 'input', function() {
+        //     var el = $(this);
+        //     var ext = el.data('ext');
+        //     var aEl = el.parents('tr').find('[download]');
+
+        //     aEl.attr('download', el.val() + ext);
+        // });
+    });
+</script>
+</div>
+<!-- <div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">图片采集器</h3>
+            </div>
+            <div class="panel-body">
+                 <div class="image-collector">
+    <div class="clearfix">
+        <div class="pull-left">
+            <a class="btn btn-back btn-default btn-sm hide">
+                <i class="glyphicon glyphicon-arrow-left"></i>
+            </a>
+            <a class="btn btn-preview btn-primary btn-sm">预览</a>
+            <span class="img-count-box hide">
+              总共
+              <span class="img-count red"></span> 张图片
+            </span>
+        </div>
+        <div class="pull-right">
+        </div>
+    </div><br>
+    <textarea placeholder="粘贴html代码"></textarea>
+    <div class="preview"></div>
+</div>
+
+<script>
+    $(function() {
+        var key = 'image-collector';
+        var container = $('.' + key);
+        var textareaEl = container.find('textarea');
+        var previewEl = container.find('.preview');
+        var imgCountEl = container.find('.img-count');
+        var imgCountBoxEl = container.find('.img-count-box');
+        var btnBack = container.find('.btn-back');
+        var btnPreview = container.find('.btn-preview');
+        var viewer;
+        var showCacheData = function() {
+            textareaEl.val(localStorage[key + '_content'] || '');
+        };
+        var setCacheData = function() {
+            localStorage[key + '_content'] = textareaEl.val();
+        };
+
+        showCacheData();
+        btnPreview.click(function() {
+            var imgEls = $(textareaEl.val()).find('img');
+
+            // imgEls.each(function(index) {
+            //     var el = $(this);
+            //     var aEl = $('<a href="' + el.attr('src') + '" download="' + index.toFixed(2) + '"/>');
+            //     el.appendTo(aEl);
+            //     previewEl.append(aEl);
+            // });
+            previewEl.html(imgEls);
+            btnBack.removeClass('hide');
+            btnPreview.hide();
+            textareaEl.hide();
+            previewEl.show();
+            imgCountEl.text(imgEls.size());
+            imgCountBoxEl.removeClass('hide');
+            try {
+                if (!viewer) {
+                    viewer = new Viewer(previewEl[0]);
+                } else {
+                    viewer.update();
+                }
+            } catch (ex) {}
+        });
+
+        btnBack.click(function() {
+            btnBack.addClass('hide');
+            btnPreview.show();
+            imgCountBoxEl.addClass('hide');
+            textareaEl.show();
+            previewEl.hide();
+            // viewer && viewer.destroy();
+        });
+
+        // previewEl.on('mouseenter', 'img', function() {
+        //     var el = $(this);
+
+        //     el.addClass('mask');
+        // });
+
+        textareaEl.change(setCacheData);
+    });
+</script>
+            </div>
+        </div>
+    </div>
+</div> -->
+    </div>
+    <!-- /container -->
+    
+</body>
+
+</html>

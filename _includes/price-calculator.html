@@ -1,11 +1,12 @@
-<div class="money-exchange">
+<!-- 定价器 -->
+<div class="price-calculator calculator">
     进价 ¥<input class="me-bid" type="number" />
     <span>+</span> 销售利润率 <input class="me-profit-per" type="number" value="30" />%
     <span>+</span> 平台费率 <input class="me-brokerage-per" type="number" value="5" />%
     <span>=</span> 售价¥ <span class="me-price"></span>
     <span class="equivalent">
         | $<input class="me-txt-usd-price" type="number" />
-        <a class="btn btn-primary btn-sm btn-change-price" ba-event="money-exchange,usd-price-change">修改</a>
+        <a class="btn btn-primary btn-sm btn-change-price" ba-event="price-calculator,usd-price-change">修改</a>
     </span><br> 销售净利润¥ <span class="me-pure-profit"></span>
     <span class="equivalent">
         | <span class="me-pure-profit-per"></span>%
@@ -24,7 +25,7 @@
     //售价=成本+平台佣金+销售利润+其它
     //x售价=成本*(1+利润率)/(1-折扣率)*(1+佣金率)
     $(function() {
-        var key = 'money-exchange';
+        var key = 'price-calculator';
         var usd2cny = 6.86800;
         var cny2usd = 0.1456;
         var container = $('.' + key);

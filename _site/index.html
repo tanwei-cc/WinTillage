@@ -13,7 +13,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180923014408" rel="stylesheet"> 
+    <link href="css/style.css?20180930122441" rel="stylesheet"> 
     
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script>
@@ -74,7 +74,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="">
+                <a class="navbar-brand" href="index.html">
                     <img src="favicon.ico" class="logo" />
                 </a>
             </div>
@@ -114,11 +114,7 @@
                             工具<span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="https://pan.baidu.com/" target="_blank">百度网盘</a></li>
-                            <li><a href="http://fanyi.baidu.com/#zh/en/" target="_blank">百度翻译</a></li>
-                            <li><a href="http://fanyi.youdao.com/" target="_blank">有道翻译</a></li>
-                            <li><a href="https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=1&tn=baidu&wd=%E8%B4%A7%E5%B8%81%E5%85%91%E6%8D%A2%E8%AE%A1%E7%AE%97%E5%99%A8&oq=%25E6%25B1%2587%25E7%258E%2587&rsv_pq=f1f256ae0000b8c3&rsv_t=1f9f7wjVwwbCZfIctHynNHODbXgPjA6UDP%2FCh2n1HEgMT1wAwtTTgAEbR0s&rqlang=cn&rsv_enter=0&rsv_sug3=13&rsv_sug1=12&rsv_sug7=100&rsv_sug2=1&prefixsug=%25E8%25B4%25A7%25E5%25B8%2581%25E5%2585%2591%25E6%258D%25A2&rsp=1&inputT=7103&rsv_sug4=7858"
-                                    target="_blank">货币转换</a></li>
+                            <li><a href="editor.html">内容编辑器</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -138,17 +134,115 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <h3 class="panel-title">利润计算器</h3>
+            </div>
+            <div class="panel-body">
+                <!-- 利润计算器 -->
+<div class="profit-calculator calculator">
+    <span>原售价($) <input class="me-price" type="number" /> - </span>
+    <span>成本(¥) <input class="me-bid" type="number" /> - </span><br>
+    <span>折扣率(%) <input class="me-discount-rate" type="number" /> - </span>
+    <span>平台佣金(%) <input class="me-platform-per" type="number" value="5" /> - </span><br>
+    <span>其他(¥) <input class="me-other-cost" type="number" /></span>
+    <br><br>
+    <div class="text-primary">
+        折后利润 <span class="me-discount-profit"></span>
+    </div>
+    <div class="text-primary">
+        净利润 <span class="me-pure-profit"></span>
+    </div><br>
+    <div class="text-muted">
+        <li>成本=进价+邮</li>
+        <li>折后利润=原售价-成本-折扣率</li>
+        <li>净利润=折后利润-平台佣金-其他</li>
+    </div>
+</div>
+<script>
+    $(function() {
+        var key = 'profit-calculator';
+        var usd2cny = 6.86800;
+        var cny2usd = 0.1456;
+        var container = $('.' + key);
+        var priceEl = container.find('.me-price');
+        var bidEl = container.find('.me-bid');
+        var discountRateEl = container.find('.me-discount-rate');
+        var platformPerEl = container.find('.me-platform-per');
+        var otherCostEl = container.find('.me-other-cost');
+        var discountProfitEl = container.find('.me-discount-profit');
+        var pureProfitEl = container.find('.me-pure-profit');
+        var numberEls = container.find('[type="number"]');
+        var moneyExchange = function(fieldName) {
+            var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
+            var bid = parseFloat(bidEl.val()) || 0; //进价
+            var discountRatePrice = (parseFloat(discountRateEl.val() || 0) / 100) * price; //折扣金额
+            var platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * price; //平台金额
+            var discountProfitPrice = 0; //折后利润
+            var discountProfitPer = 0; //折后利润率
+            var pureProfitPrice = 0; //净利润
+            var pureProfitPricePer = 0; //净利润率
+
+            if (price) {
+                discountProfitPrice = price - bid - discountRatePrice;
+                discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
+                pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
+                pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
+            }
+
+            console.log([
+                "原售价: ¥" + price,
+                "成本: ¥" + bid,
+                "折扣金额: ¥" + discountRatePrice,
+                "平台金额: ¥" + platformPrice,
+                "折后利润: ¥" + discountProfitPrice,
+                "折后利润率: " + discountProfitPer + "%",
+                "净利润: ¥" + pureProfitPrice,
+                "净利润率: " + pureProfitPricePer + "%"
+            ].join('\n'));
+
+            discountProfitEl.text(`
+                ${Math.ceil(discountProfitPer)}% | $ ${(discountProfitPrice*cny2usd).toFixed(2)}
+            `);
+            pureProfitEl.text(`
+                ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
+            `);
+        };
+        var showCacheData = function() {
+            numberEls.each(function() {
+                this.value = localStorage[this.className] || this.value || '';
+            });
+        };
+        var setCacheData = function() {
+            numberEls.each(function() {
+                localStorage[this.className] = this.value || '';
+            });
+        };
+
+        showCacheData();
+        moneyExchange();
+        [priceEl, bidEl, discountRateEl, platformPerEl, otherCostEl].forEach(function(el) {
+            el.on('input', function() {
+                moneyExchange();
+                setCacheData();
+            });
+        });
+    });
+</script>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
                 <h3 class="panel-title">定价器</h3>
             </div>
             <div class="panel-body">
-                <div class="money-exchange">
+                <!-- 定价器 -->
+<div class="price-calculator calculator">
     进价 ¥<input class="me-bid" type="number" />
     <span>+</span> 销售利润率 <input class="me-profit-per" type="number" value="30" />%
     <span>+</span> 平台费率 <input class="me-brokerage-per" type="number" value="5" />%
     <span>=</span> 售价¥ <span class="me-price"></span>
     <span class="equivalent">
         | $<input class="me-txt-usd-price" type="number" />
-        <a class="btn btn-primary btn-sm btn-change-price" ba-event="money-exchange,usd-price-change">修改</a>
+        <a class="btn btn-primary btn-sm btn-change-price" ba-event="price-calculator,usd-price-change">修改</a>
     </span><br> 销售净利润¥ <span class="me-pure-profit"></span>
     <span class="equivalent">
         | <span class="me-pure-profit-per"></span>%
@@ -156,7 +250,7 @@
     <div class="text-muted">
         <li>出售运费：由平台运费模版计算</li>
         <li>平台费用：由于无法计算 "出售运费"，因此计算偏低</li>
-        <li>货币规则：1美元=6.8300人民币，1人民币=0.1464美元</li>
+        <li>货币规则：1美元=6.86800人民币，1人民币=0.1456美元</li>
     </div>
 </div>
 <script>
@@ -167,9 +261,9 @@
     //售价=成本+平台佣金+销售利润+其它
     //x售价=成本*(1+利润率)/(1-折扣率)*(1+佣金率)
     $(function() {
-        var key = 'money-exchange';
-        var usd2cny = 6.8300;
-        var cny2usd = 0.1464;
+        var key = 'price-calculator';
+        var usd2cny = 6.86800;
+        var cny2usd = 0.1456;
         var container = $('.' + key);
         var bidEl = container.find('.me-bid');
         var priceEl = container.find('.me-price');
@@ -246,14 +340,6 @@
 </script>
             </div>
         </div>
-        <!-- <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">待开发</h3>
-            </div>
-            <div class="panel-body">
-                
-            </div>
-        </div> -->
     </div>
     <div class="col-sm-4">
         <div class="panel panel-success">
@@ -261,29 +347,29 @@
                 <h3 class="panel-title">常用</h3>
             </div>
             <div class="panel-body">
-                <li>
-                    <a href="https://docs.qq.com/sheet/BmAfQN2sop2v1PD3Vf3ahkL33GDWKK3baohy05BGA62tyoU03Cpduu0IAjCH0EBPWM0noU5K3?opendocxfrom=admin" target="_blank">【文档】商品型号</a>
-                </li>
+                <li><a href="https://sellercenter.aliexpress.com/seller/index.htm" target="_blank">【速卖通】管理</a></li>
+                <!-- <li><a href="https://www.aliexpress.com/category/200010206/smart-watches.html?spm=2114.search0103.0.0.5eba3e706EzqQ2&isrefine=y&site=glo&g=y&tag=" target="_blank">【速卖通】智能手表</a></li>
+                <li><a href="https://www.aliexpress.com/category/63705/earphones-headphones.html?spm=2114.search0103.1.19.960526c3aee6Mk&site=glo" target="_blank">【速卖通】耳机</a></li> -->
                 <li><a href="http://merchant.fy.intmall.net/main/panel" target="_blank">【丰卖网】管理</a></li>
-                <li><a href="http://en.intmall.com/category/41.html" target="_blank">【丰卖网】耳机</a></li>
-                <li><a href="http://en.intmall.com/category/708.html" target="_blank">【丰卖网】智能手表</a></li>
-                <li><a href="https://www.aliexpress.com/category/200010206/smart-watches.html?spm=2114.search0103.0.0.5eba3e706EzqQ2&isrefine=y&site=glo&g=y&tag=" target="_blank">【速卖通】智能手表</a></li>
-                <li><a href="https://www.aliexpress.com/category/63705/earphones-headphones.html?spm=2114.search0103.1.19.960526c3aee6Mk&site=glo" target="_blank">【速卖通】耳机</a></li>
-                <li><a href="https://www.amazon.com/s/ref=nb_sb_ss_ime_c_2_11?url=search-alias%3Delectronics&field-keywords=smart+watch&sprefix=smart+watch%2Caps%2C111&crid=2TR46ERJH0UHF" target="_blank">【亚马逊】智能手表</a></li>
-                <li><a href="https://www.amazon.com/Headphones-Accessories-Supplies/b/ref=nav_shopall_headphones?ie=UTF8&node=172541" target="_blank">【亚马逊】耳机</a></li>
+                <!-- <li><a href="http://en.intmall.com/category/41.html" target="_blank">【丰卖网】耳机</a></li>
+                <li><a href="http://en.intmall.com/category/708.html" target="_blank">【丰卖网】智能手表</a></li> -->
+                <!-- <li><a href="https://www.amazon.com/s/ref=nb_sb_ss_ime_c_2_11?url=search-alias%3Delectronics&field-keywords=smart+watch&sprefix=smart+watch%2Caps%2C111&crid=2TR46ERJH0UHF" target="_blank">【亚马逊】智能手表</a></li>
+                <li><a href="https://www.amazon.com/Headphones-Accessories-Supplies/b/ref=nav_shopall_headphones?ie=UTF8&node=172541" target="_blank">【亚马逊】耳机</a></li> -->
+                <li><a href="https://docs.qq.com/sheet/BmAfQN2sop2v1PD3Vf3ahkL33GDWKK3baohy05BGA62tyoU03Cpduu0IAjCH0EBPWM0noU5K3?opendocxfrom=admin" target="_blank">【工具】腾讯文档</a></li>
                 <li><a href="https://pan.baidu.com/" target="_blank">【工具】百度网盘</a></li>
                 <li><a href="http://fanyi.baidu.com/#zh/en/" target="_blank">【工具】百度翻译</a></li>
                 <li><a href="http://fanyi.youdao.com/" target="_blank">【工具】有道翻译</a></li>
+                <li><a href="https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=%E8%B4%A7%E5%B8%81%E5%85%91%E6%8D%A2&oq=%25E4%25BA%25BA%25E6%25B0%2591%25E5%25B8%2581&rsv_pq=e62c09b700019ebf&rsv_t=16b4P2pXScTMtUinz0vf29JXFl5zfU0jtV7UqzEbdyejh%2BmNo%2Fy%2F8mKZrFE&rqlang=cn&rsv_enter=1&rsv_sug3=2&rsv_sug1=2&rsv_sug7=100&rsv_sug2=0&inputT=1565&rsv_sug4=1565" target="_blank">【工具】货币兑换</a></li>
             </div>
         </div>
-        <!-- <div class="panel panel-info">
+        <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">待开发</h3>
             </div>
             <div class="panel-body">
                 
             </div>
-        </div> -->
+        </div>
     </div>
     <div class="col-sm-4">
         <div class="custom-link panel panel-warning">
@@ -445,14 +531,14 @@
         });
     });
 </script>
-        <!-- <div class="panel panel-danger">
+        <div class="panel panel-danger">
             <div class="panel-heading">
                 <h3 class="panel-title">待开发</h3>
             </div>
             <div class="panel-body">
                 
             </div>
-        </div> -->
+        </div>
     </div>
 </div>
 <!-- <div class="row">
@@ -463,271 +549,6 @@
             </div>
             <div class="panel-body">
                 <iframe class="iframe-pannel" src="http://fanyi.baidu.com/#zh/en/"></iframe>
-            </div>
-        </div>
-    </div>
-</div> -->
-<div class="row">
-    <div class="col-sm-12">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">内容编辑器</h3>
-            </div>
-            <div class="panel-body">
-                <div class="editor">
-    <div>
-        <a class="btn btn-clear btn-default btn-sm" ba-event="editor,clear">清空</a>
-        <a class="btn btn-only-img btn-info btn-sm">清空非图片</a>
-        <a class="btn btn-img-preview btn-primary btn-sm" ba-event="editor,img-preview">图片预览</a>
-        <!-- <a class="btn btn-img-download btn-success btn-sm" data-toggle="modal" data-target=".editor-im-download">图片下载</a> -->
-        <!-- <a class="btn btn-warning"></a> 
-        <a class="btn btn-danger"></a> -->
-        &nbsp;&nbsp;
-        <span class="text-muted">复制内容：点击编辑器Command + C</span>
-    </div><br>
-    <textarea></textarea> 
-    <!-- <div class="editor-im-download modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">图片下载</h4>
-            </div>
-            <div class="modal-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>图片</th>
-                            <th>尺寸</th>
-                            <th>名称</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-</div>
-<script>
-    $(function() {
-        var key = 'editor';
-        var container = $('.' + key);
-        var textareaEl = container.find('>textarea');
-        var btnClearEl = container.find('.btn-clear');
-        var btnImgPreviewEl = container.find('.btn-img-preview');
-        var btnOnlyImgEl = container.find('.btn-only-img');
-        // var btnImgDownloadEl = container.find('.btn-img-download');
-        // var tbodyEl = container.find('tbody');
-        var config = {
-            htmlRemoveTags: ['script', 'style', 'base', 'iframe'],
-            htmlDoNotWrapTags: ['script', 'style'],
-            htmlExecuteScripts: false
-        };
-        var viewer;
-        var getCacheData = function() {
-            return localStorage[key + '_content'] || '';
-        };
-        var setCacheData = function(val) {
-            localStorage[key + '_content'] = val || '';
-        };
-        var getHtml = function() {
-            return textareaEl.froalaEditor('html.get');
-        };
-        var getImgEls = function() {
-            return $(getHtml()).find('img');
-        };
-        var getImgsHtml = function() {
-            var html = [];
-
-            getImgEls().each(function() {
-                html.push(this.outerHTML);
-            });
-            return html.join('');
-        };
-        var initViewew = function() {
-            try {
-                if (!viewer) {
-                    viewer = new Viewer(container.find('.fr-view')[0]);
-                    container.find('.fr-view').on('hidden', function() {
-                        viewer.destroy();
-                    });
-                    viewer.show();
-                } else {
-                    viewer.update();
-                    viewer.show();
-                }
-            } catch (ex) {}
-        };
-        var initEditor = function() {
-            var cacheData = getCacheData();
-
-            textareaEl.froalaEditor('destroy');
-            textareaEl.val('');
-            textareaEl.on('froalaEditor.contentChanged', function(ev, editor) {
-                var html = editor.html.get();
-                setCacheData(html);
-                trackEvent('editor', 'content-change');
-            });
-            textareaEl.froalaEditor({
-                htmlRemoveTags: ['script', 'style', 'base'],
-                htmlExecuteScripts: false
-            });
-            cacheData && textareaEl.froalaEditor('html.insert', cacheData, true);
-        };
-
-        initEditor();
-
-        btnClearEl.click(function() {
-            setCacheData('');
-            initEditor();
-        });
-
-        btnImgPreviewEl.click(function() {
-            initViewew();
-        });
-
-        btnOnlyImgEl.click(function() {
-            var html = getImgsHtml();
-
-            if (!html) return;
-
-            setCacheData(html);
-            initEditor();
-        });
-
-        // btnImgDownloadEl.click(function() {
-        //     var els = getImgEls();
-        //     var html = [];
-
-        //     els.each(function(index) {
-        //         var src = this.src;
-        //         var download = index + 1;
-
-        //         if (download < 10) {
-        //             download = '0' + download;
-        //         }
-
-        //         html.push([
-        //             '<tr>',
-        //             '<td>',
-        //             '<a href="' + src + '" download="' + download + '">',
-        //             '<img src="' + src + '">下载',
-        //             '</a>',
-        //             '</td>',
-        //             '<td>' + this.width + '*' + this.height + '</td>',
-        //             '<td><input value="' + download + '""/></td>',
-        //             '<tr>'
-        //         ].join(''));
-        //     });
-
-        //     tbodyEl.html(html.join(''));
-        // });
-
-        // tbodyEl.on('input', 'input', function() {
-        //     var el = $(this);
-        //     var ext = el.data('ext');
-        //     var aEl = el.parents('tr').find('[download]');
-
-        //     aEl.attr('download', el.val() + ext);
-        // });
-    });
-</script>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- <div class="row">
-    <div class="col-sm-12">
-        <div class="panel panel-warning">
-            <div class="panel-heading">
-                <h3 class="panel-title">图片采集器</h3>
-            </div>
-            <div class="panel-body">
-                 <div class="image-collector">
-    <div class="clearfix">
-        <div class="pull-left">
-            <a class="btn btn-back btn-default btn-sm hide">
-                <i class="glyphicon glyphicon-arrow-left"></i>
-            </a>
-            <a class="btn btn-preview btn-primary btn-sm">预览</a>
-            <span class="img-count-box hide">
-              总共
-              <span class="img-count red"></span> 张图片
-            </span>
-        </div>
-        <div class="pull-right">
-        </div>
-    </div><br>
-    <textarea placeholder="粘贴html代码"></textarea>
-    <div class="preview"></div>
-</div>
-
-<script>
-    $(function() {
-        var key = 'image-collector';
-        var container = $('.' + key);
-        var textareaEl = container.find('textarea');
-        var previewEl = container.find('.preview');
-        var imgCountEl = container.find('.img-count');
-        var imgCountBoxEl = container.find('.img-count-box');
-        var btnBack = container.find('.btn-back');
-        var btnPreview = container.find('.btn-preview');
-        var viewer;
-        var showCacheData = function() {
-            textareaEl.val(localStorage[key + '_content'] || '');
-        };
-        var setCacheData = function() {
-            localStorage[key + '_content'] = textareaEl.val();
-        };
-
-        showCacheData();
-        btnPreview.click(function() {
-            var imgEls = $(textareaEl.val()).find('img');
-
-            // imgEls.each(function(index) {
-            //     var el = $(this);
-            //     var aEl = $('<a href="' + el.attr('src') + '" download="' + index.toFixed(2) + '"/>');
-            //     el.appendTo(aEl);
-            //     previewEl.append(aEl);
-            // });
-            previewEl.html(imgEls);
-            btnBack.removeClass('hide');
-            btnPreview.hide();
-            textareaEl.hide();
-            previewEl.show();
-            imgCountEl.text(imgEls.size());
-            imgCountBoxEl.removeClass('hide');
-            try {
-                if (!viewer) {
-                    viewer = new Viewer(previewEl[0]);
-                } else {
-                    viewer.update();
-                }
-            } catch (ex) {}
-        });
-
-        btnBack.click(function() {
-            btnBack.addClass('hide');
-            btnPreview.show();
-            imgCountBoxEl.addClass('hide');
-            textareaEl.show();
-            previewEl.hide();
-            // viewer && viewer.destroy();
-        });
-
-        // previewEl.on('mouseenter', 'img', function() {
-        //     var el = $(this);
-
-        //     el.addClass('mask');
-        // });
-
-        textareaEl.change(setCacheData);
-    });
-</script>
             </div>
         </div>
     </div>
