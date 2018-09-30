@@ -11,6 +11,9 @@
     </div>
     <div class="text-primary">
         净利润 <span class="me-pure-profit"></span>
+    </div>
+    <div class="text-primary">
+        折后售价 <span class="me-discount-price"></span>
     </div><br>
     <div class="text-muted">
         <li>成本=进价+邮</li>
@@ -31,6 +34,7 @@
         var otherCostEl = container.find('.me-other-cost');
         var discountProfitEl = container.find('.me-discount-profit');
         var pureProfitEl = container.find('.me-pure-profit');
+        var discountPriceEl = container.find('.me-discount-price');
         var numberEls = container.find('[type="number"]');
         var moneyExchange = function(fieldName) {
             var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
@@ -41,12 +45,14 @@
             var discountProfitPer = 0; //折后利润率
             var pureProfitPrice = 0; //净利润
             var pureProfitPricePer = 0; //净利润率
+            var discountPrice = 0;
 
             if (price) {
                 discountProfitPrice = price - bid - discountRatePrice;
                 discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
                 pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
                 pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
+                discountPrice = (price * pureProfitPricePer) * cny2usd;
             }
 
             console.log([
@@ -57,7 +63,8 @@
                 "折后利润: ¥" + discountProfitPrice,
                 "折后利润率: " + discountProfitPer + "%",
                 "净利润: ¥" + pureProfitPrice,
-                "净利润率: " + pureProfitPricePer + "%"
+                "净利润率: " + pureProfitPricePer + "%",
+                "折后售价: ¥" + discountPrice,
             ].join('\n'));
 
             discountProfitEl.text(`
@@ -66,6 +73,7 @@
             pureProfitEl.text(`
                 ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
             `);
+            discountPriceEl.text(discountPrice.toFixed(2));
         };
         var showCacheData = function() {
             numberEls.each(function() {
