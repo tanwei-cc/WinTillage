@@ -52,7 +52,7 @@
                 discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
                 pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
                 pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
-                discountPrice = (price * pureProfitPricePer) * cny2usd;
+                discountPrice = (price - discountRatePrice) * cny2usd;
             }
 
             console.log([
@@ -73,7 +73,7 @@
             pureProfitEl.text(`
                 ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
             `);
-            discountPriceEl.text(discountPrice.toFixed(2));
+            discountPriceEl.text('$ ' + discountPrice.toFixed(2));
         };
         var showCacheData = function() {
             numberEls.each(function() {
