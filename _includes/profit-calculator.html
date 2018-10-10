@@ -40,7 +40,7 @@
             var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
             var bid = parseFloat(bidEl.val()) || 0; //进价
             var discountRatePrice = (parseFloat(discountRateEl.val() || 0) / 100) * price; //折扣金额
-            var platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * price; //平台金额
+            var platformPrice = 0; //平台金额
             var discountProfitPrice = 0; //折后利润
             var discountProfitPer = 0; //折后利润率
             var pureProfitPrice = 0; //净利润
@@ -48,11 +48,12 @@
             var discountPrice = 0;
 
             if (price) {
+                discountPrice = price - discountRatePrice;
+                platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * discountPrice;
                 discountProfitPrice = price - bid - discountRatePrice;
                 discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
                 pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
                 pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
-                discountPrice = price - discountRatePrice;
             }
 
             console.log([
