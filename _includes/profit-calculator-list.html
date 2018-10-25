@@ -2,13 +2,10 @@
 <div class="profit-calculator-list calculator-list">
     <div>
         <a class="btn btn-confirm btn-primary btn-sm">确定</a>
-        <a class="btn btn-back btn-primary btn-sm">返回</a>
+        <a class="btn btn-back btn-default btn-sm">返回</a>
     </div><br>
-    <textarea></textarea>
-    <table class="table hide">
-        <thead></thead>
-        <tbody></tbody>
-    </table>
+    <textarea class="form-control" rows="20"></textarea>
+    <table class="table table-condensed"></table>
 </div>
 <script>
     $(function() {
@@ -18,49 +15,58 @@
         var container = $('.' + key);
         var textareaEl = container.find('>textarea');
         var tableEl = container.find('>table');
-        var theadEl = tableEl.find('>thead');
-        var tbodyEl = tableEl.find('>tbody');
-        var thTpl = `
+        var btnConfirmEl = container.find('.btn-confirm');
+        var btnBackEl = container.find('.btn-back');
+        var itemTpl = _.template(`
             <tr>
-                {beforeTHS}
-                <th>
-                    原售价($) - 成本(¥) - 折扣率(%) - 平台佣金(%) - 其他(¥)
-                </th>
-                <th cols="3">计算结果</th>
+                <{tagName}>{index}</{tagName}>
+                <{tagName}>{bid}</{tagName}>
+                <{tagName}>{price}</{tagName}>
+                <{tagName}>{discountRate}</{tagName}>
+                <{tagName}>{result1}</{tagName}>
+                <{tagName}>{result2}</{tagName}>
+                <{tagName}>{result3}</{tagName}>
             </tr>
-        `;
-        var trTpl = `
-            <tr>
-                {beforeTDS}
-                <td>
-                    <input class="price" type="number" /> -
-                    <input class="bid" type="number" /> -
-                    <input class="discount-rate" type="number" /> -
-                    <input class="platform-per" type="number" /> -
-                    <input class="other-cost" type="number" /> -
-                </td>
-                <td>
-                    <span class="discount-profit"></span>
-                    <span class="pure-profit"></span>
-                    <span class="discount-price"></span>
-                </td>
-            </tr>
-        `;
-        var bindEvent = function() {
-
+        `);
+        var parseHead = function(item) {
+            tableEl.append(itemTpl(_.extend({
+                tagName: 'th',
+                result1: '折后利润',
+                result2: '净利润',
+                result3: '折后售价'
+            }, item)));
         };
-        var replaceHead = function(data) {
-            data.forEach(function(val) {
-                return `<th>${val}</th>`;
-            });
-            theadEl.html(thTpl.replace('{beforeTHS}', data.map(function(val) {
-                return `<th>${val}</th>`;
-            }).join('')));
-        };
-        var appendBody = function(data) {
-            var tds = [];
+        var parseItem = function(item) {
+            var bid = item.bid;
+            var price = item.price * usd2cny;
+            var discountRate = item.discountRate * 0.01;
+            var discountRatePrice = discountRate * price;
+            var discountPrice = price - discountRatePrice;
+            var platformPrice = (5 * 0.01) * discountPrice;
+            var discountProfitPrice = price - bid - discountRatePrice;
+            var discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
+            var pureProfitPrice = discountProfitPrice - platformPrice;
+            var pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
+            var result1 = `
+                ${Math.ceil(discountProfitPer||0)}% | $${((discountProfitPrice*cny2usd)||0).toFixed(2)} | ¥${(discountProfitPrice||0).toFixed(2)}
+            `;
+            var result2 = `
+                ${Math.ceil(pureProfitPricePer||0)}% | $${((pureProfitPrice*cny2usd)||0).toFixed(2)||0} | ¥${(pureProfitPrice||0).toFixed(2)}
+            `;
+            var result3 = `$${((discountPrice*cny2usd)||0).toFixed(2)} | ¥${(discountPrice||0).toFixed(2)}`;
 
-            tbodyEl.append(thTpl.replace('{beforeTDS}', tds.join('')));
+            if (!price || !bid) {
+                result1 = '-';
+                result2 = '-';
+                result3 = '-';
+            }
+
+            tableEl.append(itemTpl(_.extend({
+                tagName: 'td',
+                result1: result1,
+                result2: result2,
+                result3: result3
+            }, item)));
         };
         var parseData = function() {
             var dataStr = textareaEl.val();
@@ -68,82 +74,37 @@
 
             rowArr.forEach(function(str, index) {
                 var colArr = str.split('\t');
-                if (!index) {
-                    replaceHead(colArr);
-                } else {
-                    appendBody();
-                }
+                var item = {
+                    index: index + 1,
+                    bid: colArr[0],
+                    price: colArr[1],
+                    discountRate: colArr[2]
+                };
+
+                !index ? parseHead(item) : parseItem(item);
             });
         };
 
-
-        var priceEl = container.find('.me-price');
-        var bidEl = container.find('.me-bid');
-        var discountRateEl = container.find('.me-discount-rate');
-        var platformPerEl = container.find('.me-platform-per');
-        var otherCostEl = container.find('.me-other-cost');
-        var discountProfitEl = container.find('.me-discount-profit');
-        var pureProfitEl = container.find('.me-pure-profit');
-        var discountPriceEl = container.find('.me-discount-price');
-        var numberEls = container.find('[type="number"]');
-        var moneyExchange = function(fieldName) {
-            var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
-            var bid = parseFloat(bidEl.val()) || 0; //进价
-            var discountRatePrice = (parseFloat(discountRateEl.val() || 0) / 100) * price; //折扣金额
-            var platformPrice = 0; //平台金额
-            var discountProfitPrice = 0; //折后利润
-            var discountProfitPer = 0; //折后利润率
-            var pureProfitPrice = 0; //净利润
-            var pureProfitPricePer = 0; //净利润率
-            var discountPrice = 0;
-
-            if (price) {
-                discountPrice = price - discountRatePrice;
-                platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * discountPrice;
-                discountProfitPrice = price - bid - discountRatePrice;
-                discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
-                pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
-                pureProfitPricePer = Math.ceil((pureProfitPrice / price) * 100);
-            }
-
-            console.log([
-                "原售价: ¥" + price,
-                "成本: ¥" + bid,
-                "折扣金额: ¥" + discountRatePrice,
-                "平台金额: ¥" + platformPrice,
-                "折后利润: ¥" + discountProfitPrice,
-                "折后利润率: " + discountProfitPer + "%",
-                "净利润: ¥" + pureProfitPrice,
-                "净利润率: " + pureProfitPricePer + "%",
-                "折后售价: ¥" + discountPrice,
-            ].join('\n'));
-
-            discountProfitEl.text(`
-                ${Math.ceil(discountProfitPer)}% | $${(discountProfitPrice*cny2usd).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
-            `);
-            pureProfitEl.text(`
-                ${Math.ceil(pureProfitPricePer)}% | $${((pureProfitPrice*cny2usd)).toFixed(2)} | ¥${pureProfitPrice.toFixed(2)}
-            `);
-            discountPriceEl.text(`$${(discountPrice*cny2usd).toFixed(2)} | ¥${discountPrice.toFixed(2)}`);
-        };
-        var showCacheData = function() {
-            numberEls.each(function() {
-                this.value = localStorage[this.className] || this.value || '';
-            });
-        };
-        var setCacheData = function() {
-            numberEls.each(function() {
-                localStorage[this.className] = this.value || '';
-            });
-        };
-
-        showCacheData();
-        moneyExchange();
-        [priceEl, bidEl, discountRateEl, platformPerEl, otherCostEl].forEach(function(el) {
-            el.on('input', function() {
-                moneyExchange();
-                setCacheData();
-            });
+        btnConfirmEl.click(function() {
+            btnConfirmEl.hide();
+            btnBackEl.show();
+            textareaEl.hide();
+            tableEl.empty().show();
+            parseData(textareaEl.val().trim());
         });
+
+        btnBackEl.click(function() {
+            btnConfirmEl.show();
+            btnBackEl.hide();
+            textareaEl.show();
+            tableEl.hide();
+        });
+
+        textareaEl.val(localStorage[key + '_content'] || '');
+        textareaEl.change(function() {
+            localStorage[key + '_content'] = textareaEl.val().trim();
+        });
+
+        btnBackEl.click();
     });
 </script>

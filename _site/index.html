@@ -8,14 +8,20 @@
     <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WinTillage</title>
     <link rel="shortcut icon" href="favicon.ico">
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20180930122441" rel="stylesheet"> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.1.0/viewer.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
+    <link href="css/style.css?20181025183808" rel="stylesheet"> 
     
-    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+    <script>
+        _.templateSettings = {
+            interpolate: /\{(.+?)\}/g
+        };
+    </script>
     <script>
     var _hmt = _hmt || [];
     (function() {
@@ -114,6 +120,7 @@
                             工具<span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a href="profit-calculator-list.html">利润批量计算</a></li>
                             <li><a href="editor.html">内容编辑器</a></li>
                         </ul>
                     </li>
@@ -122,9 +129,9 @@
         </div>
     </nav>
 
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcss.com/viewerjs/1.1.0/viewer.min.js"></script>
-    <script src="https://cdn.bootcss.com/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.1.0/viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/js/froala_editor.pkgd.min.js"></script>
 
     <div class="container theme-showcase" role="main">
         <script>
@@ -150,6 +157,9 @@
     </div>
     <div class="text-primary">
         净利润 <span class="me-pure-profit"></span>
+    </div>
+    <div class="text-primary">
+        折后售价 <span class="me-discount-price"></span>
     </div><br>
     <div class="text-muted">
         <li>成本=进价+邮</li>
@@ -160,8 +170,8 @@
 <script>
     $(function() {
         var key = 'profit-calculator';
-        var usd2cny = 6.86800;
-        var cny2usd = 0.1456;
+        var usd2cny = 6.946;
+        var cny2usd = 0.1440;
         var container = $('.' + key);
         var priceEl = container.find('.me-price');
         var bidEl = container.find('.me-bid');
@@ -170,18 +180,22 @@
         var otherCostEl = container.find('.me-other-cost');
         var discountProfitEl = container.find('.me-discount-profit');
         var pureProfitEl = container.find('.me-pure-profit');
+        var discountPriceEl = container.find('.me-discount-price');
         var numberEls = container.find('[type="number"]');
         var moneyExchange = function(fieldName) {
             var price = (parseFloat(priceEl.val()) || 0) * usd2cny; //售价
             var bid = parseFloat(bidEl.val()) || 0; //进价
             var discountRatePrice = (parseFloat(discountRateEl.val() || 0) / 100) * price; //折扣金额
-            var platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * price; //平台金额
+            var platformPrice = 0; //平台金额
             var discountProfitPrice = 0; //折后利润
             var discountProfitPer = 0; //折后利润率
             var pureProfitPrice = 0; //净利润
             var pureProfitPricePer = 0; //净利润率
+            var discountPrice = 0;
 
             if (price) {
+                discountPrice = price - discountRatePrice;
+                platformPrice = ((parseFloat(platformPerEl.val()) || 0) / 100) * discountPrice;
                 discountProfitPrice = price - bid - discountRatePrice;
                 discountProfitPer = Math.ceil((discountProfitPrice / price) * 100);
                 pureProfitPrice = discountProfitPrice - platformPrice - (parseFloat(otherCostEl.val()) || 0);
@@ -196,15 +210,17 @@
                 "折后利润: ¥" + discountProfitPrice,
                 "折后利润率: " + discountProfitPer + "%",
                 "净利润: ¥" + pureProfitPrice,
-                "净利润率: " + pureProfitPricePer + "%"
+                "净利润率: " + pureProfitPricePer + "%",
+                "折后售价: ¥" + discountPrice,
             ].join('\n'));
 
             discountProfitEl.text(`
-                ${Math.ceil(discountProfitPer)}% | $ ${(discountProfitPrice*cny2usd).toFixed(2)}
+                ${Math.ceil(discountProfitPer)}% | $${(discountProfitPrice*cny2usd).toFixed(2)} | ¥${discountProfitPrice.toFixed(2)}
             `);
             pureProfitEl.text(`
-                ${Math.ceil(pureProfitPricePer)}% | $ ${((pureProfitPricePer*cny2usd)).toFixed(2)}
+                ${Math.ceil(pureProfitPricePer)}% | $${((pureProfitPrice*cny2usd)).toFixed(2)} | ¥${pureProfitPrice.toFixed(2)}
             `);
+            discountPriceEl.text(`$${(discountPrice*cny2usd).toFixed(2)} | ¥${discountPrice.toFixed(2)}`);
         };
         var showCacheData = function() {
             numberEls.each(function() {
@@ -231,10 +247,11 @@
         </div>
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">定价器</h3>
+                <!-- <h3 class="panel-title">定价器</h3> -->
+                <h3 class="panel-title">待开发</h3>
             </div>
             <div class="panel-body">
-                <!-- 定价器 -->
+                <!-- <!-- 定价器 -->
 <div class="price-calculator calculator">
     进价 ¥<input class="me-bid" type="number" />
     <span>+</span> 销售利润率 <input class="me-profit-per" type="number" value="30" />%
@@ -250,7 +267,7 @@
     <div class="text-muted">
         <li>出售运费：由平台运费模版计算</li>
         <li>平台费用：由于无法计算 "出售运费"，因此计算偏低</li>
-        <li>货币规则：1美元=6.86800人民币，1人民币=0.1456美元</li>
+        <li>货币规则：1美元=6.946人民币，1人民币=0.1440美元</li>
     </div>
 </div>
 <script>
@@ -262,8 +279,8 @@
     //x售价=成本*(1+利润率)/(1-折扣率)*(1+佣金率)
     $(function() {
         var key = 'price-calculator';
-        var usd2cny = 6.86800;
-        var cny2usd = 0.1456;
+        var usd2cny = 6.946;
+        var cny2usd = 0.1440;
         var container = $('.' + key);
         var bidEl = container.find('.me-bid');
         var priceEl = container.find('.me-price');
@@ -337,7 +354,7 @@
             setCacheData();
         });
     });
-</script>
+</script> -->
             </div>
         </div>
     </div>
@@ -348,26 +365,24 @@
             </div>
             <div class="panel-body">
                 <li><a href="https://sellercenter.aliexpress.com/seller/index.htm" target="_blank">【速卖通】管理</a></li>
-                <!-- <li><a href="https://www.aliexpress.com/category/200010206/smart-watches.html?spm=2114.search0103.0.0.5eba3e706EzqQ2&isrefine=y&site=glo&g=y&tag=" target="_blank">【速卖通】智能手表</a></li>
-                <li><a href="https://www.aliexpress.com/category/63705/earphones-headphones.html?spm=2114.search0103.1.19.960526c3aee6Mk&site=glo" target="_blank">【速卖通】耳机</a></li> -->
                 <li><a href="http://merchant.fy.intmall.net/main/panel" target="_blank">【丰卖网】管理</a></li>
-                <!-- <li><a href="http://en.intmall.com/category/41.html" target="_blank">【丰卖网】耳机</a></li>
-                <li><a href="http://en.intmall.com/category/708.html" target="_blank">【丰卖网】智能手表</a></li> -->
-                <!-- <li><a href="https://www.amazon.com/s/ref=nb_sb_ss_ime_c_2_11?url=search-alias%3Delectronics&field-keywords=smart+watch&sprefix=smart+watch%2Caps%2C111&crid=2TR46ERJH0UHF" target="_blank">【亚马逊】智能手表</a></li>
-                <li><a href="https://www.amazon.com/Headphones-Accessories-Supplies/b/ref=nav_shopall_headphones?ie=UTF8&node=172541" target="_blank">【亚马逊】耳机</a></li> -->
                 <li><a href="https://docs.qq.com/sheet/BmAfQN2sop2v1PD3Vf3ahkL33GDWKK3baohy05BGA62tyoU03Cpduu0IAjCH0EBPWM0noU5K3?opendocxfrom=admin" target="_blank">【工具】腾讯文档</a></li>
                 <li><a href="https://pan.baidu.com/" target="_blank">【工具】百度网盘</a></li>
+                <li><a href="https://translate.google.cn/" target="_blank">【工具】谷歌翻译</a></li>
                 <li><a href="http://fanyi.baidu.com/#zh/en/" target="_blank">【工具】百度翻译</a></li>
                 <li><a href="http://fanyi.youdao.com/" target="_blank">【工具】有道翻译</a></li>
                 <li><a href="https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=%E8%B4%A7%E5%B8%81%E5%85%91%E6%8D%A2&oq=%25E4%25BA%25BA%25E6%25B0%2591%25E5%25B8%2581&rsv_pq=e62c09b700019ebf&rsv_t=16b4P2pXScTMtUinz0vf29JXFl5zfU0jtV7UqzEbdyejh%2BmNo%2Fy%2F8mKZrFE&rqlang=cn&rsv_enter=1&rsv_sug3=2&rsv_sug1=2&rsv_sug7=100&rsv_sug2=0&inputT=1565&rsv_sug4=1565" target="_blank">【工具】货币兑换</a></li>
+                <li><a href="https://www.mangoerp.com/login" target="_blank">【工具】芒果店长</a></li>
             </div>
         </div>
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">待开发</h3>
+                <h3 class="panel-title">世界时间</h3>
             </div>
             <div class="panel-body">
-                
+                <li><a href="https://time.51240.com/Phoenix__localtime/" target="_blank">美国</a></li>
+                <li><a href="https://time.51240.com/Arkhangelsk__localtime/" target="_blank">俄罗斯</a></li>
+                <li><a href="https://time.51240.com/" target="_blank">搜索更多</a></li>
             </div>
         </div>
     </div>
