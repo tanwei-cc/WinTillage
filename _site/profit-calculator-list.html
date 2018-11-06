@@ -13,7 +13,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20181106114450" rel="stylesheet"> 
+    <link href="css/style.css?20181106115206" rel="stylesheet"> 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
@@ -151,7 +151,7 @@
             <a class="btn btn-back btn-default btn-sm">返回</a>
             <div class="filter-box form-inline">
                 <div class="form-group">
-                    <label>附加折扣(%)</label>
+                    <label>增加折扣(%)</label>
                     <input id="txtAddDiscountRate" type="number" class="form-control input-sm" style="width: 60px" />
                 </div>
                 <a class="btn btn-confirm btn-primary btn-sm">确定</a>
@@ -236,12 +236,13 @@
             rowArr.forEach(function(str, index) {
                 var colArr = str.split('\t');
                 var discountRate = colArr[2];
+                var addDiscountPrice = parseFloat(txtAddDiscountRate.val()) || 0;
                 var discountRateStr = discountRate;
                 var item;
 
-                if (discountRate) {
-                    discountRateStr = discountRate + '+' + txtAddDiscountRate.val();
-                    discountRate = parseFloat(discountRate) + parseFloat(txtAddDiscountRate.val()) || 0;
+                if (discountRate > 0 && addDiscountPrice) {
+                    discountRateStr += (addDiscountPrice > 0 ? '+' : '') + addDiscountPrice;
+                    discountRate = parseFloat(discountRate) + addDiscountPrice;
                 }
                 item = {
                     index: index + 1,

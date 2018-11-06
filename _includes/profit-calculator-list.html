@@ -5,7 +5,7 @@
             <a class="btn btn-back btn-default btn-sm">返回</a>
             <div class="filter-box form-inline">
                 <div class="form-group">
-                    <label>附加折扣(%)</label>
+                    <label>增加折扣(%)</label>
                     <input id="txtAddDiscountRate" type="number" class="form-control input-sm" style="width: 60px" />
                 </div>
                 <a class="btn btn-confirm btn-primary btn-sm">确定</a>
@@ -90,12 +90,13 @@
             rowArr.forEach(function(str, index) {
                 var colArr = str.split('\t');
                 var discountRate = colArr[2];
+                var addDiscountPrice = parseFloat(txtAddDiscountRate.val()) || 0;
                 var discountRateStr = discountRate;
                 var item;
 
-                if (discountRate) {
-                    discountRateStr = discountRate + '+' + txtAddDiscountRate.val();
-                    discountRate = parseFloat(discountRate) + parseFloat(txtAddDiscountRate.val()) || 0;
+                if (discountRate > 0 && addDiscountPrice) {
+                    discountRateStr += (addDiscountPrice > 0 ? '+' : '') + addDiscountPrice;
+                    discountRate = parseFloat(discountRate) + addDiscountPrice;
                 }
                 item = {
                     index: index + 1,
