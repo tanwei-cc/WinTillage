@@ -13,7 +13,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_editor.pkgd.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.8.1/css/froala_style.min.css" rel="stylesheet">
-    <link href="css/style.css?20181025183808" rel="stylesheet"> 
+    <link href="css/style.css?20181106114450" rel="stylesheet"> 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
@@ -146,9 +146,22 @@
             <div class="panel-body">
                 <!-- 利润计算器 -->
 <div class="profit-calculator-list calculator-list">
-    <div>
-        <a class="btn btn-confirm btn-primary btn-sm">确定</a>
-        <a class="btn btn-back btn-default btn-sm">返回</a>
+    <div class="clearfix">
+        <div class="pull-left">
+            <a class="btn btn-back btn-default btn-sm">返回</a>
+            <div class="filter-box form-inline">
+                <div class="form-group">
+                    <label>附加折扣(%)</label>
+                    <input id="txtAddDiscountRate" type="number" class="form-control input-sm" style="width: 60px" />
+                </div>
+                <a class="btn btn-confirm btn-primary btn-sm">确定</a>
+            </div>
+        </div>
+        <div class="pull-right">
+            <p class="text-muted" style="font-size: 12px;">
+                使用方法： 1. 复制文档中的列: 进价+邮(¥)、原售价($)、折扣(%)； 2. 粘贴到文本框； 3. 点击确定。
+            </p>
+        </div>
     </div><br>
     <textarea class="form-control" rows="20"></textarea>
     <table class="table table-condensed"></table>
@@ -160,15 +173,17 @@
         var cny2usd = 0.1445;
         var container = $('.' + key);
         var textareaEl = container.find('>textarea');
+        var filterBoxEl = container.find('.filter-box');
         var tableEl = container.find('>table');
-        var btnConfirmEl = container.find('.btn-confirm');
+        var txtAddDiscountRate = filterBoxEl.find('#txtAddDiscountRate');
         var btnBackEl = container.find('.btn-back');
+        var btnConfirmEl = container.find('.btn-confirm');
         var itemTpl = _.template(`
             <tr>
                 <{tagName}>{index}</{tagName}>
                 <{tagName}>{bid}</{tagName}>
                 <{tagName}>{price}</{tagName}>
-                <{tagName}>{discountRate}</{tagName}>
+                <{tagName}>{discountRateStr}</{tagName}>
                 <{tagName}>{result1}</{tagName}>
                 <{tagName}>{result2}</{tagName}>
                 <{tagName}>{result3}</{tagName}>
@@ -220,11 +235,20 @@
 
             rowArr.forEach(function(str, index) {
                 var colArr = str.split('\t');
-                var item = {
+                var discountRate = colArr[2];
+                var discountRateStr = discountRate;
+                var item;
+
+                if (discountRate) {
+                    discountRateStr = discountRate + '+' + txtAddDiscountRate.val();
+                    discountRate = parseFloat(discountRate) + parseFloat(txtAddDiscountRate.val()) || 0;
+                }
+                item = {
                     index: index + 1,
                     bid: colArr[0],
                     price: colArr[1],
-                    discountRate: colArr[2]
+                    discountRate: discountRate,
+                    discountRateStr: discountRateStr
                 };
 
                 !index ? parseHead(item) : parseItem(item);
@@ -232,7 +256,7 @@
         };
 
         btnConfirmEl.click(function() {
-            btnConfirmEl.hide();
+            filterBoxEl.hide();
             btnBackEl.show();
             textareaEl.hide();
             tableEl.empty().show();
@@ -240,7 +264,7 @@
         });
 
         btnBackEl.click(function() {
-            btnConfirmEl.show();
+            filterBoxEl.show();
             btnBackEl.hide();
             textareaEl.show();
             tableEl.hide();
